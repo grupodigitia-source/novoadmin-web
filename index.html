@@ -55,7 +55,7 @@
 
   .wrap { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 20px; }
   section { position: relative; padding: 72px 0; scroll-margin-top: var(--nav-h); }
-  h1, h2, h3 { letter-spacing: -0.02em; line-height: 1.12; }
+  h1, h2, h3 { letter-spacing: -0.025em; line-height: 1.1; }
   h1 { font-size: 36px; font-weight: 700; }
   h2 { font-size: 28px; font-weight: 600; }
   .label { font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--text-soft); }
@@ -73,9 +73,13 @@
     border-radius: 12px; box-shadow: var(--shadow);
   }
 
-  /* Aros del logo como fondo */
-  #rings { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-  #rings i { position: absolute; border-radius: 50%; border-style: solid; will-change: transform; }
+  /* Fondo: líneas grandes que cruzan de lado a lado */
+  #bg { position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
+  #bg path { fill: none; vector-effect: non-scaling-stroke; stroke-linecap: round; }
+  #bgA { fill: var(--terra-light) !important; opacity: 0.6; }
+  #bgL1 { stroke: var(--terra); stroke-width: 4; opacity: 0.5; }
+  #bgL2 { stroke: var(--terra-mid); stroke-width: 3; opacity: 0.85; }
+  #bgL3 { stroke: var(--terra); stroke-width: 1.500; opacity: 0.22; stroke-dasharray: 2 9; }
   .nav, main, footer { position: relative; z-index: 1; }
 
   /* Aparición al hacer scroll */
@@ -110,7 +114,7 @@
   .nav-progress { position: absolute; left: 0; bottom: -1px; height: 2px; width: 100%; background: var(--terra); transform: scaleX(0); transform-origin: 0 50%; }
   .nav-bar { height: var(--nav-h); display: flex; align-items: center; justify-content: space-between; }
   .logo { display: inline-flex; align-items: center; gap: 12px; font-size: 24px; font-weight: 700; letter-spacing: -0.03em; }
-  .logo svg { width: 40px; height: 40px; transition: transform 0.6s var(--ease); }
+  .logo svg { width: 46px; height: 46px; transition: transform 0.6s var(--ease); }
   .logo:hover svg { transform: rotate(90deg); }
   .nav-toggle { width: 44px; height: 44px; margin-right: -10px; display: inline-flex; align-items: center; justify-content: center; background: none; border: 0; cursor: pointer; border-radius: 8px; }
   .nav-toggle svg { width: 24px; height: 24px; }
@@ -123,21 +127,35 @@
   .nav-menu .btn { width: 100%; margin-top: 8px; }
 
   /* 2. Hero con Novo AI */
-  .hero { padding: calc(var(--nav-h) + 40px) 0 48px; }
+  .hero { padding: calc(var(--nav-h) + 32px) 0 48px; }
   .hero-inner { animation: fade-in 0.4s ease both; }
   @keyframes fade-in { from { opacity: 0; } to { opacity: 1; } }
-  .hero-copy { text-align: center; max-width: 880px; margin: 0 auto; }
-  .hero-mark { width: 112px; height: 112px; margin: 0 auto 28px; overflow: visible; }
-  .hero-mark .ring { transform-box: fill-box; transform-origin: center; animation: ring-in 1s var(--ease) both; }
-  .hero-mark .ring:nth-child(1) { animation-delay: 0.10s; }
-  .hero-mark .ring:nth-child(2) { animation-delay: 0.24s; }
-  .hero-mark .ring:nth-child(3) { animation-delay: 0.38s; }
-  .hero-mark .ring:nth-child(4) { animation-delay: 0.52s; }
-  @keyframes ring-in { from { opacity: 0; transform: scale(0.2) rotate(-160deg); } to { opacity: 1; transform: none; } }
+  .hero-top { display: grid; gap: 28px; align-items: center; }
+  .hero-copy { text-align: center; }
   .hero .label { color: var(--terra-deep); margin-bottom: 14px; }
+  .hero h1 { letter-spacing: -0.03em; }
   .hero h1 em { font-style: normal; color: var(--terra); }
-  .hero p.sub { margin: 20px auto 0; font-size: 18px; color: var(--text-soft); max-width: 600px; }
+  .hero p.sub { margin: 20px auto 0; font-size: 18px; color: var(--text-soft); max-width: 560px; }
   .hero-cta { margin-top: 30px; display: grid; gap: 12px; }
+  .hero-logo { position: relative; width: 240px; height: 240px; margin: 0 auto; order: -1; }
+  .big-mark { position: relative; width: 100%; height: 100%; overflow: visible; will-change: transform; }
+  .big-mark .ring {
+    stroke: var(--text); stroke-dasharray: 1180; stroke-dashoffset: 1180;
+    transform-box: fill-box; transform-origin: center;
+    animation: ring-draw 1.500s var(--ease) forwards, ring-breathe 5s ease-in-out infinite;
+    transition: translate 0.7s var(--ease);
+  }
+  .big-mark .r1 { animation-delay: 0.10s, 2.000s; }
+  .big-mark .r2 { animation-delay: 0.30s, 2.600s; }
+  .big-mark .r3 { animation-delay: 0.50s, 3.800s; }
+  .big-mark .r4 { animation-delay: 0.70s, 3.200s; }
+  @keyframes ring-draw { 0% { stroke-dashoffset: 1180; stroke: #C17A5A; } 65% { stroke: #C17A5A; } 100% { stroke-dashoffset: 0; stroke: #0a0a0a; } }
+  @keyframes ring-breathe { 0%, 100% { scale: 1; } 50% { scale: 1.055; } }
+  .hero-logo:hover .r1 { translate: -34px -34px; } .hero-logo:hover .r2 { translate: 34px -34px; }
+  .hero-logo:hover .r3 { translate: -34px 34px; } .hero-logo:hover .r4 { translate: 34px 34px; }
+  .echo { position: absolute; inset: 6%; border-radius: 50%; border: 2px solid var(--terra); opacity: 0; animation: echo 4.500s ease-out infinite; }
+  .echo:nth-child(2) { animation-delay: 1.500s; } .echo:nth-child(3) { animation-delay: 3s; }
+  @keyframes echo { 0% { transform: scale(0.5); opacity: 0.45; } 100% { transform: scale(1.5); opacity: 0; } }
 
   .demo { margin-top: 48px; display: grid; gap: 16px; }
   .chat { display: flex; flex-direction: column; overflow: hidden; }
@@ -146,8 +164,8 @@
   .chat-avatar svg { width: 24px; height: 24px; }
   .chat-head b { display: block; font-size: 15px; font-weight: 600; line-height: 1.3; }
   .chat-head small { display: block; font-size: 12px; color: var(--text-soft); line-height: 1.3; }
-  .online { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--sage-deep); white-space: nowrap; }
-  .online i { width: 7px; height: 7px; border-radius: 50%; background: var(--sage); animation: pulse 1.6s ease-in-out infinite; }
+  .online { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; color: var(--terra-deep); white-space: nowrap; }
+  .online i { width: 7px; height: 7px; border-radius: 50%; background: var(--terra); animation: pulse 1.6s ease-in-out infinite; }
   @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.7); opacity: 0.35; } }
   .chat-body { height: 400px; padding: 18px; display: flex; flex-direction: column; gap: 12px; overflow: hidden; scroll-behavior: smooth; }
   .chat-body > :first-child { margin-top: auto; }
@@ -180,7 +198,7 @@
   .wg p b { color: var(--text) !important; }
   .wg-meter .track { position: relative; height: 10px; margin: 8px 0; border-radius: 5px; background: rgba(0,0,0,0.07); }
   .wg-meter .track i { display: block; width: var(--w); height: 100%; border-radius: 5px; background: var(--terra); transform-origin: 0 50%; animation: fill 1.2s var(--ease) both; }
-  .wg-meter .track em { position: absolute; top: -4px; left: var(--t); width: 2px; height: 18px; background: var(--sage-deep); }
+  .wg-meter .track em { position: absolute; top: -4px; left: var(--t); width: 2px; height: 18px; background: var(--text); }
   .wg-list { display: grid; gap: 8px; }
   .wg-list p { font-size: 13px; color: var(--text); padding-bottom: 8px; border-bottom: 1px solid rgba(0,0,0,0.07); }
   .wg-list p:last-child { border: 0; padding: 0; font-weight: 700; }
@@ -228,22 +246,70 @@
   .feat b { display: block; font-weight: 600; }
   .feat p { margin-top: 4px; font-size: 14px; line-height: 1.5; color: var(--text-soft); }
 
-  /* Gráficas viajeras: avanzan con el scroll */
+  /* Línea que cruza la página de lado a lado */
   .trip { padding: 8px 0; }
-  .trip-card { position: relative; padding: 20px 20px 0; overflow: hidden; }
-  .trip-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
-  .trip-head small { display: block; font-size: 13px; font-weight: 500; color: var(--text-soft); }
-  .trip-head strong { display: block; font-size: 34px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.15; }
+  .band { position: relative; height: 300px; margin: 8px 0; --c: var(--terra); --c-light: var(--terra-light); --c-deep: var(--terra-deep); }
+  .band > svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
+  .band path { vector-effect: non-scaling-stroke; }
+  .band .go { fill: none; stroke: var(--terra); stroke-width: 4; stroke-linecap: round; }
+  .band .area { display: none; }
   .pct { display: inline-flex; align-items: center; gap: 4px; padding: 6px 12px; border-radius: 999px; font-size: 14px; font-weight: 700; white-space: nowrap; background: var(--c-light); color: var(--c-deep); }
   .pct svg { width: 14px; height: 14px; }
-  .trip-plot { position: relative; height: 150px; margin: 8px -20px 0; }
-  .trip-plot svg { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; }
-  .trip-plot path { fill: none; vector-effect: non-scaling-stroke; stroke-linejoin: round; stroke-linecap: round; }
-  .trip-plot .ghost { stroke: rgba(0,0,0,0.1); stroke-width: 2; stroke-dasharray: 3 7; }
-  .trip-plot .go { stroke: var(--c); stroke-width: 3.500; }
-  .trip-plot .area { fill: var(--c-light); stroke: none; }
-  .trip-dot { position: absolute; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: #fff; border: 4px solid var(--c); box-shadow: 0 0 0 6px var(--c-light); }
-  .trip-tag { position: absolute; transform: translate(-50%, -190%); padding: 5px 10px; border-radius: 8px; background: var(--text); color: #fff; font-size: 12px; font-weight: 600; white-space: nowrap; }
+  .trip-dot { position: absolute; z-index: 2; width: 20px; height: 20px; margin: -10px 0 0 -10px; border-radius: 50%; background: #fff; border: 5px solid var(--terra); box-shadow: 0 0 0 8px rgba(193,122,90,0.2); }
+  .trip-tag { position: absolute; z-index: 2; transform: translate(-50%, -190%); padding: 5px 10px; border-radius: 8px; background: var(--text); color: #fff; font-size: 13px; font-weight: 700; white-space: nowrap; }
+  .band-card { position: relative; z-index: 1; display: inline-flex; flex-direction: column; align-items: flex-start; gap: 6px; padding: 18px 22px; }
+  .band-card small { font-size: 13px; font-weight: 500; color: var(--text-soft); }
+  .band-card strong { font-size: 38px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.1; }
+
+  /* Pantallas de la app */
+  .show { display: grid; gap: 28px; align-items: center; margin-top: 48px; }
+  .show-text h3 { font-size: 26px; font-weight: 600; }
+  .show-text > p { margin-top: 12px; color: var(--text-soft); font-size: 17px; }
+  .show-text ul { margin-top: 20px; display: grid; gap: 12px; }
+  .show-text li { display: flex; gap: 12px; align-items: flex-start; font-size: 15px; }
+  .show-text li svg { width: 20px; height: 20px; flex: none; margin-top: 2px; padding: 3px; border-radius: 6px; background: var(--terra-light); color: var(--terra-deep); }
+  .phone { width: 100%; max-width: 390px; margin: 0 auto; padding: 10px; border-radius: 40px; box-shadow: var(--shadow-up); }
+  .screen { padding: 20px 16px 18px; border-radius: 30px; background: #FAF9F7; border: 1px solid rgba(0,0,0,0.06); display: grid; gap: 12px; }
+  .ph-head { display: flex; align-items: flex-end; justify-content: space-between; padding: 0 2px 4px; }
+  .ph-head b { display: block; font-size: 18px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.25; }
+  .ph-head small { display: block; font-size: 12px; color: var(--text-soft); }
+  .ph-head span { font-size: 12px; font-weight: 600; color: var(--terra-deep); }
+  .total { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 16px 18px; border-radius: 14px; background: var(--text); color: #fff; }
+  .total small { display: block; font-size: 11px; color: rgba(255,255,255,0.55); }
+  .total strong { display: block; font-size: 28px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.2; }
+  .total span { padding: 4px 10px; border-radius: 999px; font-size: 11px; font-weight: 600; background: var(--terra); white-space: nowrap; }
+  .lake { padding: 12px 14px; border-radius: 14px; background: #fff; border: 1px solid #E8E5E1; }
+  .lake p { display: flex; justify-content: space-between; align-items: baseline; font-size: 14px; font-weight: 600; }
+  .lake p span { font-size: 12px; font-weight: 500; color: var(--text-soft); }
+  .lake p span b { font-size: 14px; font-weight: 700; color: var(--text); }
+  .lake .track { height: 8px; margin: 8px 0 6px; border-radius: 4px; background: #F3F1EE; overflow: hidden; }
+  .lake .track i { display: block; height: 100%; border-radius: 4px; background: var(--c); transform: scaleX(0); transform-origin: 0 50%; }
+  .lake small { display: flex; justify-content: space-between; font-size: 11px; color: var(--text-soft); }
+  .lake small b { color: var(--text); }
+  .hm-card { padding: 14px; border-radius: 14px; background: #fff; border: 1px solid #E8E5E1; }
+  .hm-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; font-size: 13px; font-weight: 700; }
+  .hm-top span { display: inline-flex; align-items: center; gap: 5px; font-size: 10px; font-weight: 500; color: var(--text-soft); }
+  .hm-top span i { width: 8px; height: 8px; border-radius: 2px; background: rgba(193,122,90,0.15); }
+  .hm-top span i + i, .hm-top span i.hi { background: var(--terra); margin-left: 4px; }
+  .hm { display: grid; grid-template-columns: 26px repeat(7, 1fr); gap: 3px; }
+  .hm span { font-size: 9px; font-weight: 700; color: var(--text-off); text-align: center; }
+  .hm em { font-style: normal; font-size: 9px; color: var(--text-off); display: flex; align-items: center; }
+  .hm i { height: 19px; border-radius: 4px; background: rgba(193,122,90,var(--o)); }
+  .js .hm i { opacity: 0; scale: 0.4; transition: opacity 0.5s var(--ease), scale 0.5s var(--ease); transition-delay: var(--dl); }
+  .js .in .hm i { opacity: 1; scale: 1; }
+  .hm-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .hm-kpis div { padding: 12px 14px; border-radius: 14px; background: #fff; border: 1px solid #E8E5E1; }
+  .hm-kpis small { display: block; font-size: 10px; color: var(--text-soft); }
+  .hm-kpis strong { display: block; font-size: 20px; font-weight: 700; letter-spacing: -0.02em; line-height: 1.3; }
+  .hm-kpis em { font-style: normal; font-size: 11px; color: var(--terra-deep); }
+  .ai-note { padding: 12px 14px; border-radius: 14px; background: var(--terra-light); border: 1px solid rgba(193,122,90,0.25); font-size: 12px; line-height: 1.5; color: #44403C; }
+  .ai-note b { display: block; font-size: 13px; color: var(--terra-deep); margin-bottom: 2px; }
+  .wg-lakes { display: grid; gap: 10px; }
+  .wg-lakes .track { height: 6px; margin-top: 4px; border-radius: 3px; background: rgba(0,0,0,0.07); overflow: hidden; }
+  .wg-lakes .track i { display: block; height: 100%; width: var(--w); border-radius: 3px; background: var(--terra); transform-origin: 0 50%; animation: fill 1.200s var(--ease) both; }
+  .wm { position: absolute; right: -70px; top: 10px; width: 300px; height: 300px; color: var(--terra-light); pointer-events: none; will-change: transform; }
+  #descargar .wrap { position: relative; }
+
   .fills { display: grid; gap: 10px; grid-template-columns: repeat(3, 1fr); }
   .fill-card { padding: 18px 8px; text-align: center; }
   .fill-ring { position: relative; width: 84px; height: 84px; margin: 0 auto 10px; }
@@ -293,7 +359,7 @@
   .legend { display: flex; flex-wrap: wrap; gap: 14px; font-size: 13px; color: var(--text-soft); }
   .legend i { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 6px; background: var(--c); }
   .chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 600; white-space: nowrap; }
-  .chip.up { background: var(--sage-light); color: var(--sage-deep); } .chip.down { background: #FBEDEC; color: var(--red); }
+  .chip.up { background: var(--terra-light); color: var(--terra-deep); } .chip.down { background: #FBEDEC; color: var(--red); }
   .plot { position: relative; }
   .plot svg { width: 100%; height: auto; overflow: visible; }
   .plot .grid line { stroke: rgba(0,0,0,0.07); stroke-width: 1; }
@@ -377,19 +443,25 @@
     .nav-links a:hover { color: var(--text); }
     .nav-menu .btn { width: auto; margin: 0; }
 
-    .hero { padding: calc(var(--nav-h) + 56px) 0 64px; }
-    .hero-mark { width: 168px; height: 168px; margin-bottom: 32px; }
-    .hero p.sub { font-size: 19px; }
-    .hero-cta { display: flex; justify-content: center; flex-wrap: wrap; }
+    .hero { padding: calc(var(--nav-h) + 40px) 0 64px; }
+    .hero-top { grid-template-columns: 1.1fr 0.9fr; gap: 40px; min-height: 500px; }
+    .hero-copy { text-align: left; }
+    .hero p.sub { font-size: 19px; margin-left: 0; }
+    .hero-cta { display: flex; flex-wrap: wrap; }
+    .hero-logo { width: min(440px, 100%); height: auto; aspect-ratio: 1; order: 0; margin: 0 0 0 auto; }
     .demo { grid-template-columns: 1.65fr 1fr; gap: 20px; margin-top: 64px; align-items: start; }
     .chat-body { height: 440px; padding: 22px; }
     .bubble { max-width: 78%; }
     .feats { grid-template-columns: repeat(4, 1fr); gap: 14px; margin-top: 20px; }
 
     .trip { padding: 0; }
-    .trip-card { padding: 28px 32px 0; }
-    .trip-head strong { font-size: 48px; }
-    .trip-plot { height: 190px; margin: 4px -32px 0; }
+    .band { height: 400px; }
+    .band-card { padding: 24px 28px; }
+    .band-card strong { font-size: 56px; }
+    .show { grid-template-columns: 1fr 1fr; gap: 72px; margin-top: 88px; }
+    .show.flip .show-text { order: 2; }
+    .show-text h3 { font-size: 32px; }
+    .wm { width: 520px; height: 520px; right: -120px; top: -40px; }
     .fills { gap: 20px; }
     .fill-card { padding: 28px 16px; }
     .fill-ring { width: 148px; height: 148px; margin-bottom: 14px; }
@@ -420,6 +492,8 @@
     *, *::before, *::after { animation: none !important; transition: none !important; }
     .js [data-reveal] { opacity: 1; translate: 0 0; scale: 1; }
     .line-in { stroke-dashoffset: 0; }
+    .big-mark .ring { stroke-dashoffset: 0; }
+    .js .hm i { opacity: 1; scale: 1; }
     .vbars i, .hbars i { transform: none; }
     .bubble .w { opacity: 1; }
   }
@@ -445,13 +519,10 @@
   </defs>
 </svg>
 
-<!-- Aros del logo, en grande, como fondo -->
-<div id="rings" aria-hidden="true">
-  <i data-k="0.10" style="width:46vmax;height:46vmax;left:-14vmax;top:6vh;border-width:5vmax;border-color:#F5EDE8"></i>
-  <i data-k="-0.06" style="width:34vmax;height:34vmax;right:-10vmax;top:34vh;border-width:4vmax;border-color:#EBF3EE"></i>
-  <i data-k="0.16" style="width:26vmax;height:26vmax;left:38vw;top:78vh;border-width:3vmax;border-color:#FDF4E3"></i>
-  <i data-k="-0.12" style="width:20vmax;height:20vmax;right:18vw;top:-8vh;border-width:2.500vmax;border-color:#F5EDE8"></i>
-</div>
+<!-- Fondo: líneas grandes que cruzan la página -->
+<svg id="bg" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true">
+  <path id="bgA"/><path id="bgL2"/><path id="bgL3"/><path id="bgL1"/>
+</svg>
 
 <!-- 1. NAV -->
 <header class="nav" id="nav">
@@ -467,7 +538,8 @@
       <nav class="nav-menu" id="navMenu" aria-label="Principal">
         <div class="nav-links">
           <a href="#novo-ai">Novo AI</a>
-          <a href="#producto">Producto</a>
+          <a href="#app">La app</a>
+          <a href="#producto">Módulos</a>
           <a href="#graficas">Gráficas</a>
           <a href="#descargar">Descargar</a>
         </div>
@@ -483,18 +555,11 @@
   <!-- 2. HERO: Novo AI -->
   <section class="hero" id="novo-ai">
     <div class="wrap hero-inner">
-      <div class="hero-copy">
-        <svg class="hero-mark mark" viewBox="0 0 1024 1024" role="img" aria-label="Logo de Novo">
-          <g fill="none" stroke="currentColor" stroke-width="87">
-            <circle class="ring" cx="280" cy="277" r="186.500" mask="url(#novo-gap)"/>
-            <circle class="ring" cx="742" cy="277" r="186.500"/>
-            <path class="ring" d="M361.800 572.400A186.500 186.500 0 1 1 189.600 576.900"/>
-            <circle class="ring" cx="742" cy="740" r="186.500"/>
-          </g>
-        </svg>
-        <p class="label">Novo Admin</p>
-        <h1>La inteligencia artificial que <em>vive dentro de tu negocio</em></h1>
-        <p class="sub">Novo AI conoce tus ventas, tus gastos y tu operación. Pregúntale lo que sea y te responde con los datos reales de tu negocio.</p>
+      <div class="hero-top">
+        <div class="hero-copy">
+          <p class="label">Novo Admin</p>
+          <h1>La inteligencia artificial que <em>vive dentro de tu negocio</em></h1>
+          <p class="sub">Novo AI conoce tus ventas, tus gastos y tu operación. Pregúntale lo que sea y te responde con los datos reales de tu negocio.</p>
         <div class="hero-cta">
           <a class="btn btn-main" href="https://apps.apple.com/mx/app/novo-admin/id6744252774" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.8-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M13 3.5c.73-.83 1.94-1.46 2.94-1.5.13 1.17-.34 2.35-1.04 3.19-.69.85-1.83 1.51-2.95 1.42-.15-1.15.41-2.35 1.05-3.11z"/></svg>
@@ -504,6 +569,18 @@
             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M5 3.5v17a1 1 0 0 0 1.5.87l14.5-8.5a1 1 0 0 0 0-1.740L6.5 2.630A1 1 0 0 0 5 3.5z"/></svg>
             Ver en Google Play
           </a>
+        </div>
+        </div>
+        <div class="hero-logo" id="heroLogo">
+          <i class="echo"></i><i class="echo"></i><i class="echo"></i>
+          <svg class="big-mark" id="bigMark" viewBox="0 0 1024 1024" role="img" aria-label="Logo de Novo">
+            <g fill="none" stroke-width="87">
+              <circle class="ring r1" cx="280" cy="277" r="186.500" mask="url(#novo-gap)"/>
+              <circle class="ring r2" cx="742" cy="277" r="186.500"/>
+              <path class="ring r3" d="M361.800 572.400A186.500 186.500 0 1 1 189.600 576.900"/>
+              <circle class="ring r4" cx="742" cy="740" r="186.500"/>
+            </g>
+          </svg>
         </div>
       </div>
 
@@ -516,7 +593,7 @@
           </div>
           <div class="chat-body" id="chatBody">
             <div class="bubble me">¿Cómo va el mes?</div>
-            <div class="bubble bot">Vas muy bien. Llevas <b>$284,700</b> de ingresos, <b>18% arriba</b> del mes pasado al mismo corte. Tu utilidad va en <b>$92,800</b> y el jueves fue tu mejor día.</div>
+            <div class="bubble bot">Vas muy bien. Llevas <b>$284,700</b> con 20 días transcurridos, <b>8.8% arriba</b> del mes pasado al mismo corte. A este ritmo proyectas cerrar en torno a <b>$427,000</b>.</div>
           </div>
           <div class="chat-foot">
             <div class="chat-input" aria-hidden="true">
@@ -525,9 +602,9 @@
             </div>
             <div class="chips" id="chips">
               <button class="chip-btn on" type="button">¿Cómo va el mes?</button>
-              <button class="chip-btn" type="button">Mejorar mi margen</button>
+              <button class="chip-btn" type="button">¿Dónde puedo mejorar?</button>
               <button class="chip-btn" type="button">Alertas de hoy</button>
-              <button class="chip-btn" type="button">Reporte de la semana</button>
+              <button class="chip-btn" type="button">¿Cómo va la cascada?</button>
             </div>
           </div>
         </div>
@@ -541,7 +618,7 @@
             <small>Importante</small><b>Egresos 18% arriba de tu promedio</b><p>El aumento de la semana viene de mantenimiento.</p>
           </div>
           <div class="alert-card glass" data-reveal="right" style="--c:var(--sage);--c-t:var(--sage-deep);--d:0.3s">
-            <small>Buenas noticias</small><b>Meta de ventas al 78%</b><p>A este ritmo la cierras el día 27.</p>
+            <small>Buenas noticias</small><b>Meta de ventas al 78%</b><p>A este ritmo la alcanzas el día 26.</p>
           </div>
           <div class="cash glass" data-reveal="right" style="--d:0.4s">
             <small>Disponible hoy</small>
@@ -575,46 +652,100 @@
     </div>
   </section>
 
-  <!-- Gráfica viajera 1 -->
-  <div class="trip" aria-hidden="true">
+  <!-- Línea que cruza la página -->
+  <div class="band" aria-hidden="true" data-trip="band" data-from="96400" data-to="284700" data-pto="8.800" data-prefix="$">
+    <svg viewBox="0 0 1000 300" preserveAspectRatio="none">
+      <path class="area" d="M-40 262 C60 250 110 232 180 236 S300 200 380 204 S500 150 580 158 S700 96 790 104 S930 48 1040 30 L1040 300 L-40 300 Z"/>
+      <path class="go" d="M-40 262 C60 250 110 232 180 236 S300 200 380 204 S500 150 580 158 S700 96 790 104 S930 48 1040 30"/>
+    </svg>
+    <i class="trip-dot"></i><span class="trip-tag num"></span>
     <div class="wrap">
-      <div class="trip-card glass" data-trip="line" data-from="96400" data-to="284700" data-pfrom="0" data-pto="18" data-prefix="$" style="--c:var(--terra);--c-light:var(--terra-light);--c-deep:var(--terra-deep)">
-        <div class="trip-head">
-          <div><small>Ingresos del mes</small><strong class="num" data-out="value">$96,400</strong></div>
-          <span class="pct num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg><span data-out="pct">+0%</span></span>
-        </div>
-        <div class="trip-plot">
-          <svg viewBox="0 0 1000 190" preserveAspectRatio="none">
-            <defs><clipPath id="clipA"><rect x="0" y="0" width="0" height="190"/></clipPath></defs>
-            <path class="area" clip-path="url(#clipA)" d="M0 160 L70 150 L140 156 L210 132 L280 138 L350 112 L420 120 L490 96 L560 104 L630 78 L700 84 L770 58 L840 62 L910 38 L1000 22 L1000 190 L0 190 Z"/>
-            <path class="ghost" d="M0 160 L70 150 L140 156 L210 132 L280 138 L350 112 L420 120 L490 96 L560 104 L630 78 L700 84 L770 58 L840 62 L910 38 L1000 22"/>
-            <path class="go" clip-path="url(#clipA)" d="M0 160 L70 150 L140 156 L210 132 L280 138 L350 112 L420 120 L490 96 L560 104 L630 78 L700 84 L770 58 L840 62 L910 38 L1000 22"/>
-          </svg>
-          <i class="trip-dot"></i><span class="trip-tag num"></span>
-        </div>
+      <div class="band-card glass">
+        <small>Ingresos del mes</small>
+        <strong class="num" data-out="value">$96,400</strong>
+        <span class="pct num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg><span data-out="pct">+0%</span></span>
       </div>
     </div>
   </div>
+
+  <!-- Pantallas reales de la app -->
+  <section id="app">
+    <div class="wrap">
+      <div class="section-head" data-reveal>
+        <p class="label">Por dentro</p>
+        <h2>Así se ve tu negocio en Novo.</h2>
+        <p class="lead">Pantallas de la app, con las herramientas que más usan los dueños de negocio.</p>
+      </div>
+
+      <div class="show">
+        <div class="show-text" data-reveal="left">
+          <h3>Cascada financiera</h3>
+          <p>Cada peso que entra va llenando tus compromisos en orden: nómina, renta, impuestos. Lo que queda al final es tuyo, y lo sabes al momento.</p>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg>Lagos con su meta y su frecuencia de pago.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg>Aviso cuando un lago se está llenando lento.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg>Novo AI te dice qué día se completa cada uno.</li>
+          </ul>
+        </div>
+        <div class="phone glass" data-reveal="right" data-trip="lakes" aria-hidden="true">
+          <div class="screen">
+            <div class="ph-head"><div><b>Cascada financiera</b><small>Noviembre</small></div><span>4 lagos</span></div>
+            <div class="total"><div><small>Disponible este mes</small><strong class="num">$126,400</strong></div><span>Saludable</span></div>
+            <div class="lake" style="--c:#C17A5A"><p>Nómina<span><b>$32,000</b> / $32,000</span></p><div class="track"><i data-lake="100"></i></div><small><span><b class="num" data-out>0%</b> completado</span><span>Quincenal</span></small></div>
+            <div class="lake" style="--c:#A9623F"><p>Renta<span><b>$18,000</b> / $18,000</span></p><div class="track"><i data-lake="100"></i></div><small><span><b class="num" data-out>0%</b> completado</span><span>Mensual</span></small></div>
+            <div class="lake" style="--c:#D9A58C"><p>Impuestos<span><b>$8,200</b> / $12,800</span></p><div class="track"><i data-lake="64"></i></div><small><span><b class="num" data-out>0%</b> completado</span><span>Faltan $4,600</span></small></div>
+            <div class="lake" style="--c:#1C1917"><p>Retiro de socios<span><b>$12,000</b> / $28,000</span></p><div class="track"><i data-lake="43"></i></div><small><span><b class="num" data-out>0%</b> completado</span><span>Faltan $16,000</span></small></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="show flip">
+        <div class="show-text" data-reveal="right">
+          <h3>Ocupación y horarios</h3>
+          <p>Un mapa de calor te muestra a qué hora y qué día entra el dinero. Las horas fuertes y las horas muertas se ven de un vistazo.</p>
+          <ul>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg>Hora pico, hora muerta y día más activo.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg>Funciona por franja horaria o por turno.</li>
+            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.500l4.500 4.500L19 7.500"/></svg>Novo AI detecta oportunidades y te las explica.</li>
+          </ul>
+        </div>
+        <div class="phone glass" data-reveal="left" aria-hidden="true">
+          <div class="screen">
+            <div class="ph-head"><div><b>Ocupación</b><small>Noviembre</small></div><span>Mes</span></div>
+            <div class="hm-card">
+              <div class="hm-top">Ingresos por franja horaria<span><i></i>Bajo<i class="hi"></i>Alto</span></div>
+              <div class="hm" id="heat"></div>
+            </div>
+            <div class="hm-kpis">
+              <div><small>Hora pico</small><strong>18:00</strong><em>$4,820 promedio al día</em></div>
+              <div><small>Día más activo</small><strong>Viernes</strong><em>+28% vs. promedio</em></div>
+            </div>
+            <div class="ai-note"><b>Novo AI detectó una oportunidad</b>De 10 a 4 la ocupación es baja. Una tarifa especial en ese horario puede traer más tráfico sin costo fijo extra.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <!-- Cinta de indicadores -->
   <div class="ticker" aria-hidden="true">
     <div class="ticker-row" id="tickA">
       <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Ingresos del día <b>+12%</b></span>
-      <span class="pill glass" style="--c:var(--blue)"><i></i>Colegiaturas cobradas <b>92%</b></span>
-      <span class="pill glass" style="--c:var(--orange)"><i></i>Margen por litro <b>+3.1%</b></span>
-      <span class="pill glass" style="--c:var(--purple)"><i></i>Citas de hoy <b>18</b></span>
-      <span class="pill glass" style="--c:var(--sand);--c-t:var(--sand-deep)"><i></i>Avance de obra <b>68%</b></span>
-      <span class="pill glass" style="--c:var(--sage);--c-t:var(--sage-deep)"><i></i>Ocupación de canchas <b>86%</b></span>
-      <span class="pill glass" style="--c:var(--red)"><i></i>Egresos <b>-4%</b></span>
+      <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Colegiaturas cobradas <b>92%</b></span>
+      <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Margen por litro <b>+3.1%</b></span>
+      <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Citas de hoy <b>18</b></span>
+      <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Avance de obra <b>68%</b></span>
+      <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Ocupación de canchas <b>86%</b></span>
+      <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Egresos <b>-4%</b></span>
     </div>
     <div class="ticker-row" id="tickB">
-      <span class="pill glass" style="--c:var(--purple)"><i></i>Consultas del mes <b>+9%</b></span>
-      <span class="pill glass" style="--c:var(--sage);--c-t:var(--sage-deep)"><i></i>Utilidad <b>+15%</b></span>
-      <span class="pill glass" style="--c:var(--orange)"><i></i>Litros vendidos <b>+6%</b></span>
-      <span class="pill glass" style="--c:var(--blue)"><i></i>Alumnos al corriente <b>94%</b></span>
-      <span class="pill glass" style="--c:var(--sand);--c-t:var(--sand-deep)"><i></i>Pagos de la semana <b>12</b></span>
+      <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Consultas del mes <b>+9%</b></span>
+      <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Utilidad <b>+15%</b></span>
+      <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Litros vendidos <b>+6%</b></span>
+      <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Alumnos al corriente <b>94%</b></span>
+      <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Pagos de la semana <b>12</b></span>
       <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Reservas <b>+21%</b></span>
-      <span class="pill glass" style="--c:var(--blue)"><i></i>Corte de caja <b>Listo</b></span>
+      <span class="pill glass" style="--c:var(--terra);--c-t:var(--terra-deep)"><i></i>Corte de caja <b>Listo</b></span>
     </div>
   </div>
 
@@ -622,12 +753,12 @@
   <section id="producto">
     <div class="wrap">
       <div class="section-head" data-reveal>
-        <p class="label">Producto</p>
+        <p class="label">Módulos</p>
         <h2>Un sistema. Cinco industrias.</h2>
         <p class="lead">Cada módulo trae sus propias gráficas y los indicadores que importan en ese giro. Novo AI los entiende todos.</p>
       </div>
       <div class="giros">
-        <article class="giro glass" data-reveal style="--c:#7A9E87;--c-t:#4F7A5F;--c-soft:rgba(122,158,135,0.4);--c-tint:rgba(122,158,135,0.14);--d:0s;--bd:0s">
+        <article class="giro glass" data-reveal style="--c:#C17A5A;--c-t:#A9623F;--c-soft:rgba(193,122,90,0.35);--c-tint:rgba(193,122,90,0.10);--d:0s;--bd:0s">
           <div class="giro-top">
             <div class="giro-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><ellipse cx="19" cy="12" rx="7.500" ry="8.500" transform="rotate(38 19 12)"/><path d="M13.600 18.600L5 28M15 9.500l7 5M17.500 6.500l6 4.500M13.500 13l6 4.500"/><circle cx="26" cy="26" r="2.200" fill="currentColor" stroke="none"/></svg></div>
             <div><h3>Pádel</h3><p>Reservas, canchas, cobros y cafetería.</p></div>
@@ -638,7 +769,7 @@
           </div>
         </article>
 
-        <article class="giro glass" data-reveal style="--c:#9333ea;--c-soft:rgba(147,51,234,0.28);--c-tint:rgba(147,51,234,0.07);--d:0.08s;--bd:-0.600s">
+        <article class="giro glass" data-reveal style="--c:#C17A5A;--c-t:#A9623F;--c-soft:rgba(193,122,90,0.35);--c-tint:rgba(193,122,90,0.10);--d:0.08s;--bd:-0.600s">
           <div class="giro-top">
             <div class="giro-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 27S4.500 20 4.500 11.500a6 6 0 0 1 11.500-2.500 6 6 0 0 1 11.500 2.500C27.500 20 16 27 16 27z"/><path d="M9 15h3.500l2-4 3 8 2-4H23"/></svg></div>
             <div><h3>Médico</h3><p>Agenda, consultas e ingresos del consultorio.</p></div>
@@ -646,13 +777,13 @@
           <div class="giro-viz">
             <small>Consultas <b>+9%</b></small>
             <svg viewBox="0 0 200 56" preserveAspectRatio="none" aria-hidden="true">
-              <path d="M0 44 L25 38 L50 42 L75 28 L100 32 L125 20 L150 24 L175 10 L200 14 L200 56 L0 56 Z" fill="rgba(147,51,234,0.12)"/>
-              <path class="line-in" pathLength="1" d="M0 44 L25 38 L50 42 L75 28 L100 32 L125 20 L150 24 L175 10 L200 14" fill="none" stroke="#9333ea" stroke-width="2.500" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
+              <path d="M0 44 L25 38 L50 42 L75 28 L100 32 L125 20 L150 24 L175 10 L200 14 L200 56 L0 56 Z" fill="rgba(193,122,90,0.16)"/>
+              <path class="line-in" pathLength="1" d="M0 44 L25 38 L50 42 L75 28 L100 32 L125 20 L150 24 L175 10 L200 14" fill="none" stroke="#C17A5A" stroke-width="2.500" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke"/>
             </svg>
           </div>
         </article>
 
-        <article class="giro glass" data-reveal style="--c:#2563eb;--c-soft:rgba(37,99,235,0.28);--c-tint:rgba(37,99,235,0.07);--d:0.16s;--bd:-1.200s">
+        <article class="giro glass" data-reveal style="--c:#C17A5A;--c-t:#A9623F;--c-soft:rgba(193,122,90,0.35);--c-tint:rgba(193,122,90,0.10);--d:0.16s;--bd:-1.200s">
           <div class="giro-top">
             <div class="giro-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12l13-6 13 6-13 6-13-6z"/><path d="M8.500 15v6.500c2.200 2 4.700 3 7.500 3s5.300-1 7.500-3V15M29 12v8"/></svg></div>
             <div><h3>Escuela</h3><p>Colegiaturas, alumnos y control administrativo.</p></div>
@@ -662,13 +793,13 @@
             <svg viewBox="0 0 200 56" aria-hidden="true">
               <g transform="rotate(-90 100 28)">
                 <circle cx="100" cy="28" r="23" fill="none" stroke="rgba(0,0,0,0.07)" stroke-width="9"/>
-                <circle class="ring-in" data-ring="0.92" cx="100" cy="28" r="23" fill="none" stroke="#2563eb" stroke-width="9" stroke-linecap="round" stroke-dasharray="144.500" stroke-dashoffset="144.500"/>
+                <circle class="ring-in" data-ring="0.92" cx="100" cy="28" r="23" fill="none" stroke="#C17A5A" stroke-width="9" stroke-linecap="round" stroke-dasharray="144.500" stroke-dashoffset="144.500"/>
               </g>
             </svg>
           </div>
         </article>
 
-        <article class="giro glass" data-reveal style="--c:#ea580c;--c-soft:rgba(234,88,12,0.28);--c-tint:rgba(234,88,12,0.07);--d:0.24s;--bd:-1.800s">
+        <article class="giro glass" data-reveal style="--c:#C17A5A;--c-t:#A9623F;--c-soft:rgba(193,122,90,0.35);--c-tint:rgba(193,122,90,0.10);--d:0.24s;--bd:-1.800s">
           <div class="giro-top">
             <div class="giro-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M6 27V7a2.500 2.500 0 0 1 2.500-2.500h7A2.500 2.500 0 0 1 18 7v20M4 27h16M9.500 10h5M18 15h2a2.500 2.500 0 0 1 2.500 2.500v4.500a2 2 0 0 0 4 0V12l-3.500-3.500"/></svg></div>
             <div><h3>Gasolinera</h3><p>Pipas, márgenes por combustible y merma.</p></div>
@@ -679,7 +810,7 @@
           </div>
         </article>
 
-        <article class="giro glass" data-reveal style="--c:#D4A853;--c-t:#9C7420;--c-soft:rgba(212,168,83,0.4);--c-tint:rgba(212,168,83,0.16);--d:0.32s;--bd:-2.400s">
+        <article class="giro glass" data-reveal style="--c:#C17A5A;--c-t:#A9623F;--c-soft:rgba(193,122,90,0.35);--c-tint:rgba(193,122,90,0.10);--d:0.32s;--bd:-2.400s">
           <div class="giro-top">
             <div class="giro-icon"><svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="2.200" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 27h24M8 27V6h4v21M12 9h14l-3 4H12M22 13v5M20 18h4v4h-4zM5 6h10"/></svg></div>
             <div><h3>Obras</h3><p>Avance por partida, pagos y reportes.</p></div>
@@ -703,11 +834,11 @@
           <small>Meta de ventas</small>
         </div>
         <div class="fill-card glass">
-          <div class="fill-ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" stroke="rgba(0,0,0,0.07)"/><circle data-fill="91" cx="50" cy="50" r="42" stroke="#7A9E87"/></svg><b class="num">0%</b></div>
+          <div class="fill-ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" stroke="rgba(0,0,0,0.07)"/><circle data-fill="91" cx="50" cy="50" r="42" stroke="#A9623F"/></svg><b class="num">0%</b></div>
           <small>Cobranza</small>
         </div>
         <div class="fill-card glass">
-          <div class="fill-ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" stroke="rgba(0,0,0,0.07)"/><circle data-fill="86" cx="50" cy="50" r="42" stroke="#D4A853"/></svg><b class="num">0%</b></div>
+          <div class="fill-ring"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="42" stroke="rgba(0,0,0,0.07)"/><circle data-fill="86" cx="50" cy="50" r="42" stroke="#D9A58C"/></svg><b class="num">0%</b></div>
           <small>Ocupación</small>
         </div>
       </div>
@@ -751,15 +882,15 @@
               <svg viewBox="0 0 132 132">
                 <circle cx="66" cy="66" r="54" stroke="rgba(0,0,0,0.05)"/>
                 <circle id="dS1" cx="66" cy="66" r="54" stroke="#C17A5A"/>
-                <circle id="dS2" cx="66" cy="66" r="54" stroke="#7A9E87"/>
-                <circle id="dS3" cx="66" cy="66" r="54" stroke="#D4A853"/>
+                <circle id="dS2" cx="66" cy="66" r="54" stroke="#E8C4B0"/>
+                <circle id="dS3" cx="66" cy="66" r="54" stroke="#1C1917"/>
               </svg>
               <div><b class="num" id="dPct">0%</b><span>con tarjeta</span></div>
             </div>
             <ul class="donut-legend">
               <li><span><i style="--c:var(--terra)"></i>Tarjeta</span><b class="num" id="dP1">0%</b></li>
-              <li><span><i style="--c:var(--sage)"></i>Efectivo</span><b class="num" id="dP2">0%</b></li>
-              <li><span><i style="--c:var(--sand)"></i>Transferencia</span><b class="num" id="dP3">0%</b></li>
+              <li><span><i style="--c:var(--terra-mid)"></i>Efectivo</span><b class="num" id="dP2">0%</b></li>
+              <li><span><i style="--c:#1C1917"></i>Transferencia</span><b class="num" id="dP3">0%</b></li>
             </ul>
           </div>
         </div>
@@ -781,37 +912,17 @@
           <div class="panel-head"><div><small>Metas del mes</small></div></div>
           <div class="metas">
             <div style="--c:var(--terra)"><p>Meta de ventas <b class="num" id="dM1v">0%</b></p><div class="track"><i id="dM1"></i></div></div>
-            <div style="--c:var(--sage)"><p>Cobranza <b class="num" id="dM2v">0%</b></p><div class="track"><i id="dM2"></i></div></div>
-            <div style="--c:var(--sand)"><p>Presupuesto usado <b class="num" id="dM3v">0%</b></p><div class="track"><i id="dM3"></i></div></div>
+            <div style="--c:var(--terra-deep)"><p>Cobranza <b class="num" id="dM2v">0%</b></p><div class="track"><i id="dM2"></i></div></div>
+            <div style="--c:var(--terra-mid)"><p>Presupuesto usado <b class="num" id="dM3v">0%</b></p><div class="track"><i id="dM3"></i></div></div>
           </div>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- Gráfica viajera 3 -->
-  <div class="trip" aria-hidden="true">
-    <div class="wrap">
-      <div class="trip-card glass" data-trip="line" data-from="24" data-to="32.600" data-pfrom="0" data-pto="8.600" data-suffix="%" data-decimals="1" data-punit=" pts" style="--c:var(--sage);--c-light:var(--sage-light);--c-deep:var(--sage-deep)">
-        <div class="trip-head">
-          <div><small>Margen neto</small><strong class="num" data-out="value">24.0%</strong></div>
-          <span class="pct num"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M6 11l6-6 6 6"/></svg><span data-out="pct">+0 pts</span></span>
-        </div>
-        <div class="trip-plot">
-          <svg viewBox="0 0 1000 190" preserveAspectRatio="none">
-            <defs><clipPath id="clipB"><rect x="0" y="0" width="0" height="190"/></clipPath></defs>
-            <path class="area" clip-path="url(#clipB)" d="M0 150 L80 154 L160 138 L240 142 L320 120 L400 126 L480 100 L560 108 L640 82 L720 70 L800 76 L880 50 L940 44 L1000 30 L1000 190 L0 190 Z"/>
-            <path class="ghost" d="M0 150 L80 154 L160 138 L240 142 L320 120 L400 126 L480 100 L560 108 L640 82 L720 70 L800 76 L880 50 L940 44 L1000 30"/>
-            <path class="go" clip-path="url(#clipB)" d="M0 150 L80 154 L160 138 L240 142 L320 120 L400 126 L480 100 L560 108 L640 82 L720 70 L800 76 L880 50 L940 44 L1000 30"/>
-          </svg>
-          <i class="trip-dot"></i><span class="trip-tag num"></span>
-        </div>
-      </div>
-    </div>
-  </div>
-
   <!-- 5. DESCARGAR -->
   <section id="descargar">
+    <svg class="wm" id="wm" viewBox="0 0 1024 1024" aria-hidden="true"><use href="#novo-mark"/></svg>
     <div class="wrap">
       <div class="section-head" data-reveal>
         <p class="label">Descargar</p>
@@ -980,22 +1091,24 @@
 
   /* ───── Novo AI: chat que se escribe y se contesta solo ───── */
   var ICON_ALERT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.400" stroke-linecap="round" stroke-linejoin="round"><path d="M12 4l9 16H3L12 4zM12 10v4M12 17.500v0"/></svg>';
-  var W_BARS = '<div class="wg wg-bars">' + [['L', 38], ['M', 54], ['M', 46], ['J', 100], ['V', 72], ['S', 84], ['D', 60]].map(function (d, i) {
+  var W_BARS = '<div class="wg wg-bars">' + [['L', 46], ['M', 38], ['M', 42], ['J', 50], ['V', 66], ['S', 100], ['D', 84]].map(function (d, i) {
     return '<div' + (d[1] === 100 ? ' class="top"' : '') + '><i style="--h:' + d[1] + '%;--i:' + i + '"></i>' + d[0] + '</div>';
   }).join('') + '</div>';
-  var W_METER = '<div class="wg wg-meter"><p><span>Margen actual</span><b>31%</b></p><div class="track"><i style="--w:62%"></i><em style="--t:70%"></em></div><p><span>Objetivo: 35%</span><span>+4 puntos posibles</span></p></div>';
+  var W_PROJ = '<div class="wg wg-meter"><p><span>Llevas al día 20</span><b>$284,700</b></p><div class="track"><i style="--w:67%"></i><em style="--t:85%"></em></div><p><span>Proyección de cierre</span><span>$427,000</span></p></div>';
   var W_LIST = '<div class="wg wg-list"><p><span>Renta</span><span>$22,000</span></p><p><span>Proveedor de insumos</span><span>$18,400</span></p><p><span>Servicios</span><span>$8,200</span></p><p><span>Total</span><span>$48,600</span></p></div>';
-  var W_REPORT = '<div class="wg wg-report"><div><small>Ingresos</small><strong>$184,200</strong></div><div><small>Egresos</small><strong>$61,400</strong></div><div><small>Utilidad</small><strong>$122,800</strong></div><div class="wg-file"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3h7l5 5v13H7V3zM14 3v5h5M10 13h6M10 17h6"/></svg>Reporte semanal listo para compartir</div></div>';
+  var W_LAKES = '<div class="wg wg-lakes">' + [['Nómina', 100], ['Renta', 100], ['Impuestos', 64], ['Retiro de socios', 43]].map(function (d) {
+    return '<div><p><span>' + d[0] + '</span><b>' + d[1] + '%</b></p><div class="track"><i style="--w:' + d[1] + '%"></i></div></div>';
+  }).join('') + '</div>';
   var SCENES = [
     [
       { u: '¿Cómo va el mes?' },
-      { a: 'Vas muy bien. Llevas <b>$284,700</b> de ingresos, <b>18% arriba</b> del mes pasado al mismo corte. Tu utilidad va en <b>$92,800</b> y el jueves fue tu mejor día.', w: W_BARS },
+      { a: 'Vas muy bien. Llevas <b>$284,700</b> con 20 días transcurridos, <b>8.8% arriba</b> del mes pasado al mismo corte. A este ritmo proyectas cerrar en torno a <b>$427,000</b>.', w: W_PROJ },
       { u: '¿Y contra mi meta?' },
-      { a: 'Llevas el <b>78%</b> de la meta y te quedan 9 días. A este ritmo la cierras el día 27.' }
+      { a: 'Tu meta es de $365,000 y llevas el <b>78%</b>. A este ritmo la alcanzas el día 26.' }
     ],
     [
-      { u: '¿Cómo puedo mejorar mi margen?' },
-      { a: 'Tu margen neto está en <b>31%</b>. Veo tres palancas:<ol><li>Tus dos proveedores principales subieron precios 6%. Renegociar te regresa cerca de 1.5 puntos.</li><li>De 2 a 5 pm tu ocupación baja a 40%. Una promoción en ese horario suma ingreso sin costo fijo extra.</li><li>Las comisiones de terminal se llevan 2.9%. Incentivar transferencia las reduce.</li></ol>', w: W_METER }
+      { u: 'Dame un análisis del mes y dime dónde puedo mejorar' },
+      { a: '<b>Fortalezas.</b> Sábados y domingos generan 2.1 veces más que los días entre semana, y de 6 a 8 pm se concentra el 38% de tus ingresos.<br><br><b>Oportunidad.</b> Martes y miércoles de 10 a 2 estás al 23% de ocupación. Una promoción en ese horario puede sumar cerca de $8,000 al mes.<br><br><b>Riesgo.</b> Tienes una nómina pendiente de $6,600. Si no la pagas antes del día 15, afecta tu lago de Nómina.', w: W_BARS }
     ],
     [
       { a: '<span class="tag">' + ICON_ALERT + 'Alerta crítica</span><br>Mañana vencen <b>3 pagos</b> por <b>$48,600</b>.', w: W_LIST, cls: 'alert' },
@@ -1004,8 +1117,8 @@
       { a: '<span class="tag">' + ICON_ALERT + 'Aviso</span><br>Tus egresos de la semana van <b>18% arriba</b> de tu promedio. El aumento viene de mantenimiento.', cls: 'warn' }
     ],
     [
-      { u: 'Hazme el reporte de la semana' },
-      { a: 'Listo. Fue una buena semana: ingresos <b>12% arriba</b> y egresos bajo control. Lo dejé en Reportes para que lo compartas con tu contador.', w: W_REPORT }
+      { u: '¿Cómo va la cascada?' },
+      { a: 'Nómina y Renta ya están cubiertas. Impuestos va en <b>64%</b> y le faltan <b>$4,600</b>; a tu ritmo se llena el día 24. Después de tus compromisos te quedan <b>$126,400</b> disponibles.', w: W_LAKES }
     ]
   ];
   var chatBody = $('chatBody'), typed = $('typed'), chips = $('chips').children;
@@ -1075,16 +1188,54 @@
     c.addEventListener('click', function () { chatStarted = true; playScene(i); });
   });
 
-  /* ───── Gráficas viajeras ───── */
+  /* Mapa de calor de ocupación */
+  (function () {
+    var hm = $('heat'); if (!hm) return;
+    var hours = ['7h', '8h', '9h', '10h', '11h', '12h', '17h', '18h', '19h', '20h', '21h'];
+    var vals = [[12, 20, 12, 28, 20, 55, 70], [35, 40, 30, 45, 50, 85, 100], [20, 15, 20, 18, 22, 60, 75], [10, 8, 10, 8, 12, 45, 50], [8, 6, 8, 6, 10, 30, 35], [6, 6, 6, 6, 8, 20, 22], [50, 55, 48, 60, 70, 40, 30], [75, 80, 100, 100, 100, 50, 35], [65, 70, 85, 90, 85, 45, 28], [40, 45, 55, 60, 65, 30, 20], [20, 22, 28, 30, 35, 15, 10]];
+    var html = '<span></span>' + ['L', 'M', 'M', 'J', 'V', 'S', 'D'].map(function (d) { return '<span>' + d + '</span>'; }).join('');
+    vals.forEach(function (row, r) {
+      html += '<em>' + hours[r] + '</em>';
+      row.forEach(function (o, c) { html += '<i style="--o:' + (o / 100) + ';--dl:' + ((r + c) * 30) + 'ms"></i>'; });
+    });
+    hm.innerHTML = html;
+  })();
+
+  /* Fondo: líneas grandes que cruzan y suben con el scroll */
+  var BG = [
+    { el: $('bgL1'), area: $('bgA'), y0: 800, y1: 360, a: 64, b: 30, f1: 0.0052, f2: 0.0131, ph: 0.0, tilt: 230, sp: 1.00 },
+    { el: $('bgL2'), y0: 900, y1: 600, a: 46, b: 24, f1: 0.0046, f2: 0.0117, ph: 2.1, tilt: 150, sp: 0.72 },
+    { el: $('bgL3'), y0: 560, y1: 180, a: 54, b: 20, f1: 0.0061, f2: 0.0149, ph: 4.4, tilt: 190, sp: 1.25 }
+  ];
+  function smooth(pts) {
+    var d = 'M' + pts[0][0].toFixed(1) + ' ' + pts[0][1].toFixed(1);
+    for (var i = 0; i < pts.length - 1; i++) {
+      var p0 = pts[i - 1] || pts[i], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2] || p2;
+      d += 'C' + (p1[0] + (p2[0] - p0[0]) / 6).toFixed(1) + ' ' + (p1[1] + (p2[1] - p0[1]) / 6).toFixed(1) + ' ' +
+        (p2[0] - (p3[0] - p1[0]) / 6).toFixed(1) + ' ' + (p2[1] - (p3[1] - p1[1]) / 6).toFixed(1) + ' ' + p2[0].toFixed(1) + ' ' + p2[1].toFixed(1);
+    }
+    return d;
+  }
+  function drawBg(s, prog) {
+    for (var k = 0; k < BG.length; k++) {
+      var L = BG[k], pts = [], base = lerp(L.y0, L.y1, prog);
+      for (var x = -80; x <= 1080; x += 80) {
+        pts.push([x, base - L.tilt * (x - 500) / 1000 + L.a * Math.sin(x * L.f1 + s * L.sp + L.ph) + L.b * Math.sin(x * L.f2 - s * L.sp * 0.6 + L.ph * 2)]);
+      }
+      var d = smooth(pts);
+      L.el.setAttribute('d', d);
+      if (L.area) L.area.setAttribute('d', d + 'L1080 1100L-80 1100Z');
+    }
+  }
+
+  /* ───── Gráficas que avanzan con el scroll ───── */
   var trips = [];
-  document.querySelectorAll('[data-trip="line"]').forEach(function (card) {
-    var go = card.querySelector('.go');
+  document.querySelectorAll('[data-trip="band"]').forEach(function (el) {
+    var go = el.querySelector('.go');
     trips.push({
-      type: 'line', el: card, go: go, len: go.getTotalLength(),
-      clip: card.querySelector('clipPath rect'), dot: card.querySelector('.trip-dot'), tag: card.querySelector('.trip-tag'),
-      val: card.querySelector('[data-out="value"]'), pct: card.querySelector('[data-out="pct"]'),
-      from: +card.dataset.from, to: +card.dataset.to, pfrom: +card.dataset.pfrom, pto: +card.dataset.pto,
-      pre: card.dataset.prefix || '', suf: card.dataset.suffix || '', dec: +(card.dataset.decimals || 0), punit: card.dataset.punit || '%', last: -1
+      type: 'band', el: el, go: go, len: go.getTotalLength(), dot: el.querySelector('.trip-dot'), tag: el.querySelector('.trip-tag'),
+      val: el.querySelector('[data-out="value"]'), pct: el.querySelector('[data-out="pct"]'),
+      from: +el.dataset.from, to: +el.dataset.to, pto: +el.dataset.pto, pre: el.dataset.prefix || '', last: -1
     });
   });
   document.querySelectorAll('[data-trip="fills"]').forEach(function (box) {
@@ -1096,25 +1247,35 @@
     });
     trips.push({ type: 'fills', el: box, items: items, last: -1 });
   });
-  function fmt(t, v) { return t.pre + (t.dec ? v.toFixed(t.dec) : Math.round(v).toLocaleString('en-US')) + t.suf; }
+  document.querySelectorAll('[data-trip="lakes"]').forEach(function (box) {
+    var items = [];
+    box.querySelectorAll('[data-lake]').forEach(function (bar) {
+      items.push({ bar: bar, to: +bar.dataset.lake, out: bar.closest('.lake').querySelector('[data-out]') });
+    });
+    trips.push({ type: 'lakes', el: box, items: items, last: -1 });
+  });
   function drawTrips(vh) {
     for (var i = 0; i < trips.length; i++) {
       var t = trips[i], r = t.el.getBoundingClientRect();
       if (r.bottom < -80 || r.top > vh + 80) continue;
-      var p = still ? 1 : clamp((vh * 0.96 - r.top) / (vh * 0.62), 0, 1);
+      var p = still ? 1 : clamp((vh * 0.96 - r.top) / (vh * (t.type === 'band' ? 0.85 : 0.62)), 0, 1);
       if (Math.abs(p - t.last) < 0.001) continue; t.last = p;
-      if (t.type === 'line') {
-        var pt = t.go.getPointAtLength(t.len * p), x = pt.x / 10, y = pt.y / 190 * 100;
-        t.clip.setAttribute('width', pt.x);
+      if (t.type === 'band') {
+        var pt = t.go.getPointAtLength(t.len * (0.07 + 0.86 * p)), x = pt.x / 10, y = pt.y / 3;
         t.dot.style.left = t.tag.style.left = x + '%'; t.dot.style.top = t.tag.style.top = y + '%';
         t.tag.style.transform = 'translate(' + (x > 88 ? '-100%' : x < 10 ? '0' : '-50%') + ', -190%)';
-        var v = lerp(t.from, t.to, p), pv = lerp(t.pfrom, t.pto, p);
-        t.val.textContent = t.tag.textContent = fmt(t, v);
-        t.pct.textContent = '+' + (t.punit === '%' ? Math.round(pv) : pv.toFixed(1)) + t.punit;
-      } else {
+        t.val.textContent = t.pre + Math.round(lerp(t.from, t.to, p)).toLocaleString('en-US');
+        t.pct.textContent = t.tag.textContent = '+' + (t.pto * p).toFixed(1) + '%';
+      } else if (t.type === 'fills') {
         t.items.forEach(function (it, k) {
           var q = clamp(p * 1.25 - k * 0.12, 0, 1), val = it.to * ease(q);
           it.c.setAttribute('stroke-dashoffset', (it.C * (1 - val / 100)).toFixed(1));
+          it.out.textContent = Math.round(val) + '%';
+        });
+      } else {
+        t.items.forEach(function (it, k) {
+          var q = clamp(p * 1.35 - k * 0.14, 0, 1), val = it.to * ease(q);
+          it.bar.style.transform = 'scaleX(' + (val / 100).toFixed(3) + ')';
           it.out.textContent = Math.round(val) + '%';
         });
       }
@@ -1192,7 +1353,7 @@
   }
 
   /* Bucle de animación */
-  var rings = document.querySelectorAll('#rings i');
+  var bigMark = $('bigMark'), wm = $('wm');
   var dash = $('dash'), progress = $('navProgress');
   var sy = window.scrollY || 0, t0 = performance.now();
   function frame(now) {
@@ -1202,16 +1363,15 @@
     var max = document.documentElement.scrollHeight - vh;
     progress.style.transform = 'scaleX(' + (max > 0 ? clamp(target / max, 0, 1) : 0) + ')';
     if (!still) {
-      for (var i = 0; i < rings.length; i++) {
-        var k = parseFloat(rings[i].getAttribute('data-k'));
-        rings[i].style.transform = 'translate3d(' + (Math.sin(time * 0.25 + i) * 14).toFixed(1) + 'px,' + (-sy * k).toFixed(1) + 'px,0)';
-      }
+      if (sy < vh * 1.5) bigMark.style.transform = 'translate3d(0,' + (sy * 0.12).toFixed(1) + 'px,0) rotate(' + (sy * 0.07).toFixed(2) + 'deg) scale(' + Math.max(0.78, 1 - sy / 2600).toFixed(3) + ')';
+      if (wm) wm.style.transform = 'rotate(' + (sy * 0.03).toFixed(2) + 'deg)';
       if (halfA) {
         var off = sy * 0.45 + time * 22;
         tickA.style.transform = 'translate3d(' + (-(off % halfA)).toFixed(1) + 'px,0,0)';
         tickB.style.transform = 'translate3d(' + (-halfB + (off % halfB)).toFixed(1) + 'px,0,0)';
       }
     }
+    drawBg(sy / 240 + (still ? 0 : time * 0.07), max > 0 ? clamp(sy / max, 0, 1) : 0);
     drawTrips(vh);
     var r = dash.getBoundingClientRect();
     drawDash(still ? 1 : clamp((vh * 0.92 - r.top) / (r.height + vh * 0.35), 0, 1));
