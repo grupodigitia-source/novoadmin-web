@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QRs — Novo Admin</title>
+<meta name="description" content="Alta de pacientes por código QR en Novo Admin. El paciente llena sus datos desde su celular y tú los confirmas en la app.">
+<meta name="theme-color" content="#ffffff">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Crect width='1024' height='1024' rx='200' fill='%23fff'/%3E%3Cg fill='none' stroke='%230a0a0a' stroke-width='87'%3E%3Cpath d='M216 450A186.500 186.500 0 1 1 345 450'/%3E%3Ccircle cx='742' cy='277' r='186.500'/%3E%3Cpath d='M361.800 572.400A186.500 186.500 0 1 1 189.600 576.900'/%3E%3Ccircle cx='742' cy='740' r='186.500'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/novo.css">
+<style>
+  /* Esta página pertenece al sitio, no al producto: conserva el
+     glassmorphism y el movimiento del resto de novoadmin.mx */
+  body { background: #FFFFFF; }
+  .wrap { width: 100%; max-width: 1160px; margin: 0 auto; padding: 0 20px; }
+  .glass { background: rgba(255,255,255,0.58); border: 1px solid rgba(0,0,0,0.08); -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3); border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.04); }
+  .nav, main, footer { position: relative; z-index: 1; }
+  .nav { position: sticky; top: 0; z-index: 50; background: rgba(255,255,255,0.72); border-bottom: 1px solid rgba(0,0,0,0.08); -webkit-backdrop-filter: blur(16px) saturate(1.3); backdrop-filter: blur(16px) saturate(1.3); }
+  .nav-bar { height: 68px; display: flex; align-items: center; justify-content: space-between; gap: 28px; }
+  .logo { display: inline-flex; align-items: center; gap: 12px; font-size: 24px; font-weight: 700; letter-spacing: -0.03em; color: #0a0a0a; text-decoration: none; font-family: 'Inter', system-ui, sans-serif; }
+  .logo svg { width: 42px; height: 42px; }
+  .logo span.sub { font-weight: 500; color: var(--terra); }
+  .nav-links { display: none; gap: 28px; font-size: 14px; }
+  .nav-links a { color: var(--muted); text-decoration: none; }
+  .nav-links a:hover { color: #0a0a0a; }
+  .nav-links a.on { color: #0a0a0a; font-weight: 600; border-bottom: 2px solid var(--terra); padding-bottom: 2px; }
+  /* El sitio usa Inter tambien en titulos; Sora se queda para el producto */
+  h1, h2, h3 { font-family: 'Inter', system-ui, sans-serif; }
+  h1 { font-size: 34px; font-weight: 700; letter-spacing: -0.03em; line-height: 1.08; }
+  h1 em { font-style: normal; color: var(--terra); }
+  .lead { margin: 18px 0 0; font-size: 17px; line-height: 1.6; color: var(--ink-2); max-width: 620px; }
+  .rotulo { margin: 0 0 14px; font-size: 13px; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: var(--terra-deep); }
+  section { padding: 56px 0; }
+  .pasos { display: grid; gap: 16px; margin-top: 40px; }
+  .paso { padding: 22px; border-radius: 12px; }
+  .paso .n { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; background: var(--terra-light); color: var(--terra-deep); font-size: 15px; font-weight: 700; font-family: 'Sora', sans-serif; }
+  .paso h2 { margin: 15px 0 6px; font-size: 17px; font-weight: 600; }
+  .paso p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--muted); }
+  .modulos { display: flex; flex-wrap: wrap; gap: 18px; align-items: stretch; }
+  .mod-activo { flex: 1 1 400px; min-width: 0; display: flex; flex-wrap: wrap; gap: 18px; align-items: center; padding: 26px; border-color: var(--terra-mid); background: rgba(245,237,232,0.55); }
+  .mod-icono { display: flex; align-items: center; justify-content: center; width: 60px; height: 60px; border-radius: 16px; background: var(--terra-deep); flex-shrink: 0; }
+  .proximos { flex: 1 1 290px; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 12px; }
+  .prox { padding: 16px; border: 1px dashed var(--border); border-radius: 12px; }
+  .prox b { display: block; font-size: 15px; font-weight: 600; color: var(--ink-2); }
+  .prox span { font-size: 12px; color: var(--muted); }
+  .garantias { display: flex; flex-wrap: wrap; gap: 20px; padding: 24px 26px; }
+  .garantias div { flex: 1 1 260px; min-width: 0; }
+  .garantias h3 { margin: 0 0 6px; font-size: 16px; font-weight: 600; }
+  .garantias p { margin: 0; font-size: 14px; line-height: 1.55; color: var(--muted); }
+  footer { padding: 40px 0; border-top: 1px solid rgba(0,0,0,0.08); background: rgba(255,255,255,0.8); }
+  .pie { display: flex; flex-wrap: wrap; gap: 20px; align-items: center; justify-content: space-between; }
+  .pie-links { display: flex; gap: 22px; font-size: 14px; font-weight: 500; }
+  .pie-links a { color: var(--ink); text-decoration: none; }
+  .pie-links a:hover { color: var(--terra-deep); }
+  .copy { margin: 24px 0 0; padding-top: 20px; border-top: 1px solid rgba(0,0,0,0.08); font-size: 13px; color: var(--muted); }
+  .rev { opacity: 0; transform: translateY(26px); transition: opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1); }
+  .rev.in { opacity: 1; transform: none; }
+  @media (min-width: 768px) {
+    .wrap { padding: 0 32px; }
+    section { padding: 88px 0; }
+    h1 { font-size: 52px; }
+    .nav-links { display: flex; }
+    .pasos { grid-template-columns: repeat(3, minmax(0,1fr)); gap: 20px; }
+  }
+  @media (prefers-reduced-motion: reduce) { .rev { opacity: 1; transform: none; } }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <mask id="hueco" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024"><rect width="1024" height="1024" fill="#fff"/><rect x="216" y="277" width="129" height="260" fill="#000"/></mask>
+  <symbol id="novo" viewBox="0 0 1024 1024"><g fill="none" stroke="currentColor" stroke-width="87"><circle cx="280" cy="277" r="186.5" mask="url(#hueco)"/><circle cx="742" cy="277" r="186.5"/><path d="M361.8 572.4A186.5 186.5 0 1 1 189.6 576.9"/><circle cx="742" cy="740" r="186.5"/></g></symbol>
+</defs></svg>
+
+<div id="fondo" aria-hidden="true">
+  <svg class="qr" viewBox="0 0 120 120">
+    <rect class="marco" x="11" y="11" width="28" height="28"/><rect x="22" y="22" width="6" height="6"/>
+    <rect class="marco" x="81" y="11" width="28" height="28"/><rect x="92" y="22" width="6" height="6"/>
+    <rect class="marco" x="11" y="81" width="28" height="28"/><rect x="22" y="92" width="6" height="6"/>
+    <rect class="lee" x="52" y="12" width="6" height="6" style="animation-delay:-.1s"/><rect class="lee" x="64" y="12" width="6" height="6" style="animation-delay:0s"/>
+    <rect class="lee" x="52" y="24" width="6" height="6" style="animation-delay:.05s"/><rect class="lee" x="68" y="28" width="6" height="6" style="animation-delay:.1s"/>
+    <rect class="lee" x="56" y="36" width="6" height="6" style="animation-delay:.15s"/><rect class="lee" x="12" y="52" width="6" height="6" style="animation-delay:.2s"/>
+    <rect class="lee" x="28" y="52" width="6" height="6" style="animation-delay:.2s"/><rect class="lee" x="52" y="52" width="6" height="6" style="animation-delay:.25s"/>
+    <rect class="lee" x="68" y="52" width="6" height="6" style="animation-delay:.25s"/><rect class="lee" x="84" y="52" width="6" height="6" style="animation-delay:.3s"/>
+    <rect class="lee" x="100" y="52" width="6" height="6" style="animation-delay:.3s"/><rect class="lee" x="20" y="64" width="6" height="6" style="animation-delay:.35s"/>
+    <rect class="lee" x="44" y="64" width="6" height="6" style="animation-delay:.35s"/><rect class="lee" x="76" y="64" width="6" height="6" style="animation-delay:.4s"/>
+    <rect class="lee" x="96" y="68" width="6" height="6" style="animation-delay:.4s"/><rect class="lee" x="52" y="76" width="6" height="6" style="animation-delay:.45s"/>
+    <rect class="lee" x="84" y="80" width="6" height="6" style="animation-delay:.45s"/><rect class="lee" x="64" y="88" width="6" height="6" style="animation-delay:.5s"/>
+    <rect class="lee" x="100" y="92" width="6" height="6" style="animation-delay:.5s"/><rect class="lee" x="52" y="100" width="6" height="6" style="animation-delay:.55s"/>
+    <rect class="lee" x="80" y="104" width="6" height="6" style="animation-delay:.55s"/><rect class="lee" x="96" y="108" width="6" height="6" style="animation-delay:.6s"/>
+    <rect class="haz" x="4" y="6" width="112" height="8" rx="4"/>
+  </svg>
+  <svg class="base" viewBox="0 0 120 150">
+    <ellipse class="cil" cx="60" cy="26" rx="46" ry="15"/>
+    <path class="cil" d="M14 26v36c0 8.3 20.6 15 46 15s46-6.7 46-15V26"/>
+    <path class="cil" d="M14 62v36c0 8.3 20.6 15 46 15s46-6.7 46-15V62"/>
+    <path class="cil" d="M14 98v22c0 8.3 20.6 15 46 15s46-6.7 46-15V98"/>
+    <rect class="reg" x="26" y="44" width="68" height="5" rx="2.5" style="animation-delay:0s"/>
+    <rect class="reg" x="26" y="80" width="68" height="5" rx="2.5" style="animation-delay:.25s"/>
+    <rect class="reg" x="26" y="116" width="68" height="5" rx="2.5" style="animation-delay:.5s"/>
+  </svg>
+  <i class="dato" style="animation-delay:0s"></i>
+  <i class="dato" style="animation-delay:-2s"></i>
+  <i class="dato" style="animation-delay:-4s"></i>
+</div>
+
+<header class="nav">
+  <div class="wrap">
+    <div class="nav-bar">
+      <a class="logo" href="../index.html" aria-label="Novo Admin, inicio">
+        <svg viewBox="0 0 1024 1024" aria-hidden="true" style="color:#0a0a0a"><use href="#novo"/></svg>
+        <span>Novo <span class="sub">Admin</span></span>
+      </a>
+      <nav class="nav-links" aria-label="Principal">
+        <a href="../index.html#novo-ai">Novo AI</a>
+        <a href="../index.html#app">La app</a>
+        <a href="../index.html#producto">Módulos</a>
+        <a href="./" class="on">QRs</a>
+        <a href="../index.html#descargar">Descargar</a>
+      </nav>
+      <a class="btn btn-primario" href="../entrar/" style="min-height:44px;font-size:14px">Entrar a mi panel</a>
+    </div>
+  </div>
+</header>
+
+<main>
+  <section>
+    <div class="wrap">
+      <p class="rotulo">QRs</p>
+      <h1>Tus pacientes se dan de alta <em>antes de llegar</em></h1>
+      <p class="lead">Pega un código QR en tu recepción. El paciente lo escanea, llena sus datos desde su celular y tú los confirmas con un toque en Novo Admin. Sin hojas sueltas y sin capturar a mano.</p>
+
+      <div class="pasos">
+        <div class="paso glass rev"><div class="n">1</div><h2>Pegas tu QR</h2><p>Descargas la imagen o el cartel listo para imprimir desde tu panel.</p></div>
+        <div class="paso glass rev"><div class="n">2</div><h2>El paciente lo llena</h2><p>Desde su celular, en minutos, con las secciones que tú elegiste.</p></div>
+        <div class="paso glass rev"><div class="n">3</div><h2>Recepción confirma</h2><p>Llega como prerregistro. Lo confirmas, lo unes a un paciente o lo descartas.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <h2 style="font-size:28px;font-weight:600;margin:0 0 6px">Módulos con QR</h2>
+      <p style="margin:0 0 28px;font-size:16px;color:var(--muted)">Cada módulo tiene su propio formulario. Vamos sumando giros.</p>
+
+      <div class="modulos">
+        <div class="mod-activo glass rev">
+          <div class="mod-icono">
+            <svg viewBox="0 0 32 32" fill="none" stroke="#FFFFFF" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:30px;height:30px"><path d="M16 27S4.5 20 4.5 11.5a6 6 0 0 1 11.5-2.5 6 6 0 0 1 11.5 2.5C27.5 20 16 27 16 27z"/><path d="M9 15h3.5l2-4 3 8 2-4H23"/></svg>
+          </div>
+          <div style="flex:1 1 210px;min-width:0">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+              <h3 style="margin:0;font-size:22px;font-weight:600">Médicos</h3>
+              <span class="insignia ins-verde">Disponible</span>
+            </div>
+            <p style="margin:6px 0 0;font-size:14px;line-height:1.5;color:var(--ink-2)">Alta de pacientes: datos, salud, seguro y facturación.</p>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:7px;align-items:flex-start">
+            <a class="btn btn-primario" href="../entrar/">Entrar con mi cuenta</a>
+            <span style="font-size:12.5px;color:var(--muted)">Necesitas tu cuenta de Novo Admin</span>
+          </div>
+        </div>
+
+        <div class="proximos rev">
+          <div class="prox"><b>Pádel</b><span>Próximamente</span></div>
+          <div class="prox"><b>Escuela</b><span>Próximamente</span></div>
+          <div class="prox"><b>Gasolinera</b><span>Próximamente</span></div>
+          <div class="prox"><b>Obras</b><span>Próximamente</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top:0">
+    <div class="wrap">
+      <div class="garantias glass rev">
+        <div><h3>Datos de salud, tratados como tales</h3><p>El QR lleva un token aleatorio, nunca el identificador de tu consultorio. Puedes rotarlo cuando quieras.</p></div>
+        <div><h3>Nada entra sin que lo veas</h3><p>Cada respuesta llega como prerregistro. El expediente solo se crea cuando recepción confirma.</p></div>
+        <div><h3>Consentimiento expreso</h3><p>El paciente acepta el aviso de privacidad antes de enviar. Se guarda fecha, hora y versión.</p></div>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="pie">
+      <a class="logo" href="../index.html" style="font-size:21px"><svg viewBox="0 0 1024 1024" aria-hidden="true" style="width:34px;height:34px;color:#0a0a0a"><use href="#novo"/></svg><span>Novo <span class="sub">Admin</span></span></a>
+      <div class="pie-links">
+        <a href="../index.html#soporte">Soporte</a>
+        <a href="mailto:soporte@novoadmin.com">Contacto</a>
+        <a href="../index.html#privacidad">Privacidad</a>
+      </div>
+    </div>
+    <p class="copy">© 2026 Novo Admin. Todos los derechos reservados.</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  if (!('IntersectionObserver' in window)) {
+    document.querySelectorAll('.rev').forEach(function (el) { el.classList.add('in'); });
+    return;
+  }
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } });
+  }, { threshold: 0.15, rootMargin: '0px 0px -5% 0px' });
+  document.querySelectorAll('.rev').forEach(function (el) { io.observe(el); });
+})();
+</script>
+</body>
+</html>

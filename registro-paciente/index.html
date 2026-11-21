@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Registro de paciente</title>
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="theme-color" content="#FFFFFF">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Crect width='1024' height='1024' rx='200' fill='%23fff'/%3E%3Cg fill='none' stroke='%230a0a0a' stroke-width='87'%3E%3Cpath d='M216 450A186.500 186.500 0 1 1 345 450'/%3E%3Ccircle cx='742' cy='277' r='186.500'/%3E%3Cpath d='M361.800 572.400A186.500 186.500 0 1 1 189.600 576.900'/%3E%3Ccircle cx='742' cy='740' r='186.500'/%3E%3C/g%3E%3C/svg%3E">
+<!-- Esta página no carga nada de terceros: ni fuentes, ni analíticas,
+     ni pixeles, ni cookies. Las tipografías viven en este repo. -->
+<link rel="stylesheet" href="../assets/novo.css">
+<style>
+  body { background: var(--bg); }
+  .hoja { max-width: 520px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
+  .cabeza { padding: 16px 20px; border-bottom: 1.5px solid var(--border); background: var(--bg-2); }
+  .ident { display: flex; align-items: center; gap: 11px; }
+  .ident-logo { width: 38px; height: 38px; border-radius: 10px; border: 1.5px solid var(--border); background: var(--bg); display: flex; align-items: center; justify-content: center; flex-shrink: 0; overflow: hidden; }
+  .ident-logo img { width: 100%; height: 100%; object-fit: contain; }
+  .ident b { display: block; font-size: 15px; font-weight: 600; line-height: 1.3; }
+  .ident span { display: block; font-size: 12px; color: var(--muted); line-height: 1.3; }
+  .pasos { display: flex; gap: 6px; margin-top: 14px; }
+  .pasos i { flex: 1; height: 4px; border-radius: 2px; background: var(--faint); }
+  .pasos i.on { background: var(--terra-deep); }
+  .paso-txt { margin: 8px 0 0; font-size: 12.5px; color: var(--muted); }
+  .cuerpo { flex: 1; padding: 22px 20px 32px; }
+  .cuerpo h1 { font-size: 21px; font-weight: 700; margin-bottom: 4px; }
+  .sub { margin: 0 0 20px; font-size: 14px; line-height: 1.5; color: var(--muted); }
+  .bloque-cond { padding: 15px; border: 1.5px solid var(--terra-mid); border-radius: 14px; background: var(--terra-light); margin-bottom: 18px; }
+  .bloque-cond .tit { margin: 0 0 12px; font-size: 14px; font-weight: 600; }
+  .seccion { padding-top: 20px; margin-top: 20px; border-top: 1.5px solid var(--border); }
+  .seccion h2 { font-size: 17px; font-weight: 700; margin-bottom: 14px; }
+  .aviso-caja { padding: 16px; border: 1.5px solid var(--border); border-radius: 14px; background: var(--bg-2); max-height: 300px; overflow-y: auto; -webkit-overflow-scrolling: touch; }
+  .aviso-caja p { margin: 0 0 10px; font-size: 13px; line-height: 1.6; color: var(--ink-2); }
+  .aviso-caja p:last-child { margin-bottom: 0; }
+  .barra-abajo { position: sticky; bottom: 0; padding: 14px 20px calc(14px + env(safe-area-inset-bottom)); background: var(--bg); border-top: 1.5px solid var(--border); display: flex; gap: 10px; }
+  .fin { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px 24px; }
+  .fin .circulo { width: 76px; height: 76px; border-radius: 50%; background: var(--sage-light); display: flex; align-items: center; justify-content: center; margin-bottom: 22px; }
+  .fin h1 { font-size: 25px; font-weight: 700; }
+  .fin p { margin: 14px 0 0; font-size: 15px; line-height: 1.6; color: var(--ink-2); max-width: 380px; }
+</style>
+</head>
+<body>
+
+<div class="hoja">
+
+  <!-- Pantallas de salida -->
+  <section id="pantalla-aviso" class="fin oculto" aria-live="polite">
+    <div class="circulo" id="aviso-circulo" style="background:var(--sand-light)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#7A5A12" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:36px;height:36px"><path d="M12 4l9 16H3L12 4zM12 10v4M12 17.4v.2"/></svg>
+    </div>
+    <h1 id="aviso-titulo">Falta el código</h1>
+    <p id="aviso-texto"></p>
+  </section>
+
+  <section id="pantalla-ok" class="fin oculto" aria-live="polite">
+    <div class="circulo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="#3F6B50" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="width:38px;height:38px"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+    </div>
+    <h1>Tus datos ya llegaron</h1>
+    <p>Recepción los revisará y quedarás dado de alta. Si ya eras paciente, los unirán a tu expediente para no duplicarlo.</p>
+    <div class="tarjeta-plana" style="width:100%;max-width:380px;margin-top:26px;padding:18px;text-align:left">
+      <p style="margin:0 0 10px;font-size:13px;font-weight:600">Qué sigue</p>
+      <p style="margin:0 0 8px;font-size:13px;line-height:1.55;color:var(--muted)">1 · Al llegar, di tu nombre en recepción.</p>
+      <p style="margin:0 0 8px;font-size:13px;line-height:1.55;color:var(--muted)">2 · Si algo falta, te lo preguntarán ahí mismo.</p>
+      <p style="margin:0;font-size:13px;line-height:1.55;color:var(--muted)">3 · Recibirás recordatorios si los aceptaste.</p>
+    </div>
+    <p id="sello" style="font-size:12.5px;color:var(--muted);margin-top:16px"></p>
+    <p style="font-size:12.5px;color:var(--muted);margin-top:20px">Ya puedes cerrar esta página.</p>
+  </section>
+
+  <!-- Formulario -->
+  <div id="formulario">
+    <header class="cabeza">
+      <div class="ident" id="ident">
+        <span class="ident-logo" id="ident-logo" aria-hidden="true">
+          <svg viewBox="0 0 1024 1024" style="width:22px;height:22px;color:var(--subtle)" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="87"><path d="M216 450A186.5 186.5 0 1 1 345 450"/><circle cx="742" cy="277" r="186.5"/><path d="M361.8 572.4A186.5 186.5 0 1 1 189.6 576.9"/><circle cx="742" cy="740" r="186.5"/></g></svg>
+        </span>
+        <span style="min-width:0">
+          <b id="ident-nombre">Registro de paciente</b>
+          <span id="ident-sub">Llena tus datos antes de tu consulta</span>
+        </span>
+      </div>
+      <div class="pasos" aria-hidden="true"><i class="on" id="b1"></i><i id="b2"></i><i id="b3"></i></div>
+      <p class="paso-txt" id="paso-txt">Paso 1 de 3 · Tus datos</p>
+    </header>
+
+    <form id="forma" class="cuerpo" novalidate autocomplete="on">
+
+      <!-- Campo trampa: invisible para personas, tentador para bots -->
+      <div class="trampa" aria-hidden="true">
+        <label for="apellido-extra">No llenes este campo</label>
+        <input id="apellido-extra" name="apellido_extra" type="text" tabindex="-1" autocomplete="off">
+      </div>
+
+      <!-- ── PASO 1 ── -->
+      <div id="paso1">
+        <h1>Tus datos</h1>
+        <p class="sub">Los campos con <span class="req">*</span> son obligatorios.</p>
+
+        <div class="grupo">
+          <label class="etiqueta" for="nombres">Nombre(s) <span class="req">*</span></label>
+          <input class="campo" id="nombres" name="nombres" type="text" maxlength="120" autocomplete="given-name" required>
+          <p class="error-campo oculto" id="e-nombres"></p>
+        </div>
+
+        <div class="grupo">
+          <label class="etiqueta" for="paterno">Apellido paterno <span class="req">*</span></label>
+          <input class="campo" id="paterno" name="paterno" type="text" maxlength="120" autocomplete="family-name" required>
+          <p class="error-campo oculto" id="e-paterno"></p>
+        </div>
+
+        <div class="grupo">
+          <label class="etiqueta" for="materno">Apellido materno <span class="req">*</span></label>
+          <input class="campo" id="materno" name="materno" type="text" maxlength="120" required>
+          <label class="casilla" for="sin-materno" style="margin-top:10px">
+            <input id="sin-materno" type="checkbox">
+            <span>No tengo apellido materno</span>
+          </label>
+          <p class="error-campo oculto" id="e-materno"></p>
+        </div>
+
+        <div class="grupo">
+          <label class="etiqueta" for="nacimiento">Fecha de nacimiento <span class="req">*</span></label>
+          <input class="campo" id="nacimiento" name="nacimiento" type="date" autocomplete="bday" required>
+          <p class="ayuda oculto" id="edad"></p>
+          <p class="error-campo oculto" id="e-nacimiento"></p>
+        </div>
+
+        <div class="grupo oculto" id="g-responsable">
+          <div class="bloque-cond">
+            <p class="tit">Persona responsable</p>
+            <p style="margin:-6px 0 12px;font-size:13px;line-height:1.5;color:var(--ink-2)">Como eres menor de 18, necesitamos a quién avisar.</p>
+            <input class="campo" id="resp-nombre" type="text" placeholder="Nombre completo" aria-label="Nombre de la persona responsable" style="margin-bottom:10px">
+            <input class="campo" id="resp-tel" type="tel" inputmode="numeric" placeholder="Teléfono" aria-label="Teléfono de la persona responsable">
+            <p class="error-campo oculto" id="e-responsable"></p>
+          </div>
+        </div>
+
+        <div class="grupo">
+          <span class="etiqueta" id="lbl-sexo">Sexo <span class="req">*</span></span>
+          <div class="opciones" role="radiogroup" aria-labelledby="lbl-sexo">
+            <label class="opcion" for="sx-f"><input id="sx-f" type="radio" name="sexo" value="Femenino">Femenino</label>
+            <label class="opcion" for="sx-m"><input id="sx-m" type="radio" name="sexo" value="Masculino">Masculino</label>
+            <label class="opcion" for="sx-o" style="flex:0 0 92px"><input id="sx-o" type="radio" name="sexo" value="Otro">Otro</label>
+          </div>
+          <p class="error-campo oculto" id="e-sexo"></p>
+        </div>
+
+        <div class="grupo">
+          <label class="etiqueta" for="celular">Celular <span class="req">*</span></label>
+          <input class="campo" id="celular" name="celular" type="tel" inputmode="numeric" maxlength="14" autocomplete="tel-national" required>
+          <p class="ayuda">10 dígitos. Lo usamos para tus recordatorios de cita.</p>
+          <p class="error-campo oculto" id="e-celular"></p>
+        </div>
+
+        <div class="grupo">
+          <label class="etiqueta" for="correo">Correo <span class="opc">· opcional</span></label>
+          <input class="campo" id="correo" name="correo" type="email" inputmode="email" autocomplete="email">
+          <p class="error-campo oculto" id="e-correo"></p>
+        </div>
+
+        <div class="grupo">
+          <label class="etiqueta" for="cp">Código postal <span class="opc">· opcional</span></label>
+          <input class="campo" id="cp" name="cp" type="text" inputmode="numeric" maxlength="5" autocomplete="postal-code">
+        </div>
+
+        <div class="grupo">
+          <label class="etiqueta" for="recordatorios">¿Cómo prefieres tus recordatorios? <span class="opc">· opcional</span></label>
+          <select class="campo" id="recordatorios">
+            <option value="">Sin preferencia</option>
+            <option>WhatsApp</option><option>Mensaje de texto</option><option>Correo</option><option>Prefiero no recibir</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- ── PASO 2 ── -->
+      <div id="paso2" class="oculto">
+        <h1>Tu salud y tus datos de pago</h1>
+        <p class="sub">Todo este paso es opcional. Si no lo sabes, déjalo en blanco.</p>
+
+        <div id="sec-salud">
+          <h2 style="font-size:17px;font-weight:700;margin-bottom:14px">Salud</h2>
+          <div class="grupo">
+            <label class="etiqueta" for="sangre">Tipo de sangre</label>
+            <select class="campo" id="sangre">
+              <option value="">No sé</option><option>O+</option><option>O−</option><option>A+</option><option>A−</option><option>B+</option><option>B−</option><option>AB+</option><option>AB−</option>
+            </select>
+          </div>
+          <div class="grupo"><label class="etiqueta" for="alergias">Alergias</label><textarea class="campo" id="alergias" rows="2" placeholder="Medicamentos, alimentos, otras"></textarea></div>
+          <div class="grupo"><label class="etiqueta" for="enfermedades">Enfermedades o padecimientos</label><textarea class="campo" id="enfermedades" rows="2"></textarea></div>
+          <div class="grupo"><label class="etiqueta" for="medicamentos">Medicamentos que tomas hoy</label><textarea class="campo" id="medicamentos" rows="2"></textarea></div>
+          <div class="grupo"><label class="etiqueta" for="cirugias">Cirugías</label><textarea class="campo" id="cirugias" rows="2"></textarea></div>
+          <div class="grupo"><label class="etiqueta" for="antecedentes">Antecedentes familiares</label><textarea class="campo" id="antecedentes" rows="2"></textarea></div>
+          <div class="grupo oculto" id="g-embarazo">
+            <span class="etiqueta" id="lbl-emb">¿Estás embarazada o en lactancia?</span>
+            <div class="opciones" role="radiogroup" aria-labelledby="lbl-emb">
+              <label class="opcion" for="emb-si"><input id="emb-si" type="radio" name="embarazo" value="Sí">Sí</label>
+              <label class="opcion" for="emb-no"><input id="emb-no" type="radio" name="embarazo" value="No">No</label>
+              <label class="opcion" for="emb-na" style="flex:0 0 108px"><input id="emb-na" type="radio" name="embarazo" value="No aplica">No aplica</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="seccion" id="sec-emergencia">
+          <h2>Contacto de emergencia</h2>
+          <div class="grupo"><input class="campo" id="em-nombre" type="text" placeholder="Nombre" aria-label="Nombre del contacto de emergencia"></div>
+          <div class="grupo" style="display:flex;gap:10px">
+            <input class="campo" id="em-parentesco" type="text" placeholder="Parentesco" aria-label="Parentesco" style="flex:1;min-width:0">
+            <input class="campo" id="em-tel" type="tel" inputmode="numeric" placeholder="Teléfono" aria-label="Teléfono de emergencia" style="flex:1;min-width:0">
+          </div>
+        </div>
+
+        <div class="seccion" id="sec-seguro">
+          <h2>Seguro de gastos médicos</h2>
+          <div class="grupo">
+            <span class="etiqueta" id="lbl-seg">¿Tienes seguro?</span>
+            <div class="opciones" role="radiogroup" aria-labelledby="lbl-seg">
+              <label class="opcion" for="seg-si"><input id="seg-si" type="radio" name="seguro" value="si">Sí</label>
+              <label class="opcion" for="seg-no"><input id="seg-no" type="radio" name="seguro" value="no">No</label>
+            </div>
+          </div>
+          <div class="bloque-cond oculto" id="g-seguro">
+            <input class="campo" id="aseguradora" type="text" placeholder="Aseguradora" aria-label="Aseguradora" style="margin-bottom:10px">
+            <input class="campo" id="poliza" type="text" placeholder="Número de póliza" aria-label="Número de póliza" style="margin-bottom:10px">
+            <input class="campo" id="titular" type="text" placeholder="Titular de la póliza" aria-label="Titular de la póliza" style="margin-bottom:10px">
+            <label class="casilla" for="siniestro" style="background:var(--bg)"><input id="siniestro" type="checkbox"><span>Tengo un siniestro abierto</span></label>
+          </div>
+        </div>
+
+        <div class="seccion" id="sec-factura">
+          <h2>Factura</h2>
+          <div class="grupo">
+            <span class="etiqueta" id="lbl-fac">¿Necesitas factura?</span>
+            <div class="opciones" role="radiogroup" aria-labelledby="lbl-fac">
+              <label class="opcion" for="fac-si"><input id="fac-si" type="radio" name="factura" value="si">Sí</label>
+              <label class="opcion" for="fac-no"><input id="fac-no" type="radio" name="factura" value="no">No</label>
+            </div>
+          </div>
+          <div class="bloque-cond oculto" id="g-factura">
+            <input class="campo" id="rfc" type="text" placeholder="RFC" aria-label="RFC" maxlength="13" style="margin-bottom:10px;text-transform:uppercase">
+            <input class="campo" id="razon" type="text" placeholder="Nombre o razón social, como en tu constancia" aria-label="Nombre o razón social" style="margin-bottom:10px">
+            <input class="campo" id="regimen" type="text" placeholder="Régimen fiscal" aria-label="Régimen fiscal" style="margin-bottom:10px">
+            <input class="campo" id="cp-fiscal" type="text" inputmode="numeric" maxlength="5" placeholder="C.P. fiscal" aria-label="Código postal fiscal" style="margin-bottom:10px">
+            <input class="campo" id="uso-cfdi" type="text" placeholder="Uso de CFDI" aria-label="Uso de CFDI" style="margin-bottom:10px">
+            <input class="campo" id="correo-factura" type="email" inputmode="email" placeholder="Correo para la factura" aria-label="Correo para la factura">
+            <p class="error-campo oculto" id="e-correo-factura"></p>
+          </div>
+        </div>
+
+        <div class="seccion">
+          <h2>Tu visita</h2>
+          <div class="grupo"><label class="etiqueta" for="motivo">Motivo de consulta</label><textarea class="campo" id="motivo" rows="2"></textarea></div>
+          <div class="grupo">
+            <label class="etiqueta" for="conociste">¿Cómo nos conociste?</label>
+            <select class="campo" id="conociste">
+              <option value="">Prefiero no decir</option>
+              <option>Me recomendaron</option><option>Redes sociales</option><option>Pasé por el consultorio</option><option>Volante o cartel</option><option>Mi aseguradora</option><option>Otro</option>
+            </select>
+          </div>
+          <div class="grupo"><label class="etiqueta" for="refiere">Médico que te refiere</label><input class="campo" id="refiere" type="text"></div>
+        </div>
+      </div>
+
+      <!-- ── PASO 3 ── -->
+      <div id="paso3" class="oculto">
+        <h1>Aviso de privacidad</h1>
+        <p id="sello-borrador" class="oculto" style="margin:0 0 14px">
+          <span class="insignia ins-arena">Texto provisional · pendiente de aprobación</span>
+        </p>
+
+        <div class="aviso-caja" tabindex="0" role="region" aria-label="Aviso de privacidad">
+          <p><strong>Quién trata tus datos.</strong> El consultorio donde te estás registrando es el responsable del uso y la protección de los datos personales que compartes en este formulario.</p>
+          <p><strong>Para qué los usamos.</strong> Para darte de alta como paciente, abrir y mantener tu expediente clínico, agendar tus citas y enviarte recordatorios y, si lo pides, emitir tu factura y gestionar tu seguro de gastos médicos.</p>
+          <p><strong>Datos sensibles.</strong> Los datos de salud que nos das (alergias, padecimientos, medicamentos, antecedentes) son datos personales sensibles conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares. Por eso necesitamos tu consentimiento expreso antes de guardarlos.</p>
+          <p><strong>Con quién los compartimos.</strong> Con nadie, salvo con tu aseguradora cuando tú lo solicites y con las autoridades cuando la ley lo exija. No los usamos para publicidad ni los vendemos.</p>
+          <p><strong>Tus derechos ARCO.</strong> Puedes acceder, rectificar, cancelar u oponerte al uso de tus datos, y retirar este consentimiento, escribiendo al consultorio.</p>
+          <p><strong>Versión.</strong> Guardamos la fecha, la hora y la versión del aviso que aceptaste.</p>
+        </div>
+        <p class="ayuda" id="version-aviso"></p>
+
+        <label class="casilla" for="consiento" style="margin-top:18px">
+          <input id="consiento" type="checkbox" required>
+          <span>He leído el aviso de privacidad y <strong>doy mi consentimiento expreso</strong> para que mis datos de salud se traten como ahí se explica. <span class="req">*</span></span>
+        </label>
+        <p class="error-campo oculto" id="e-consiento"></p>
+
+        <label class="casilla" for="quiero-recordatorios" style="margin-top:10px">
+          <input id="quiero-recordatorios" type="checkbox">
+          <span>Quiero recibir recordatorios de mis citas. <span class="opc">Opcional</span></span>
+        </label>
+
+        <div id="error-envio" class="nota nota-roja oculto" role="alert" style="margin-top:18px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3L12 4zM12 10v4M12 17.4v.2"/></svg>
+          <span id="error-envio-txt"></span>
+        </div>
+
+        <div class="nota" style="margin-top:18px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3z"/></svg>
+          <span>Esta página no lleva analíticas, pixeles ni cookies de seguimiento. Tus datos no se guardan en este teléfono.</span>
+        </div>
+      </div>
+    </form>
+
+    <div class="barra-abajo">
+      <button class="btn btn-fantasma oculto" id="atras" type="button" style="flex:0 0 auto">Atrás</button>
+      <button class="btn btn-primario" id="siguiente" type="button" style="flex:1">Continuar</button>
+    </div>
+  </div>
+</div>
+
+<script src="../novo-config.js"></script>
+<script>
+(function () {
+  'use strict';
+  var C = window.NOVO_CONFIG || {};
+  var ERR = C.errores || {};
+  var CAMPOS = C.campos || {};
+  var SEC = C.seccionesPorDefecto || {};
+
+  var $ = function (id) { return document.getElementById(id); };
+  function ver(el, mostrar) { if (el) { el.classList[mostrar ? 'remove' : 'add']('oculto'); } }
+  function val(id) { var e = $(id); return e ? e.value.trim() : ''; }
+  function marcado(id) { var e = $(id); return !!(e && e.checked); }
+  function elegido(nombre) { var e = document.querySelector('input[name="' + nombre + '"]:checked'); return e ? e.value : ''; }
+
+  function error(campoId, mensaje) {
+    var e = $('e-' + campoId), c = $(campoId);
+    if (e) { e.textContent = mensaje; ver(e, true); }
+    if (c) { c.classList.add('malo'); }
+  }
+  function limpiar(campoId) {
+    var e = $('e-' + campoId), c = $(campoId);
+    if (e) { ver(e, false); }
+    if (c) { c.classList.remove('malo'); }
+  }
+
+  function salir(titulo, texto) {
+    ver($('formulario'), false);
+    ver($('pantalla-ok'), false);
+    $('aviso-titulo').textContent = titulo;
+    $('aviso-texto').textContent = texto;
+    ver($('pantalla-aviso'), true);
+  }
+
+  /* ── Token ──────────────────────────────────────────────── */
+  var token = '';
+  try { token = (new URLSearchParams(location.search).get('t') || '').trim(); } catch (e) { token = ''; }
+
+  if (!token) {
+    salir('Falta el código', ERR.tokenFaltante || 'Vuelve a escanear el QR del consultorio.');
+    return;
+  }
+  if (!/^[A-Za-z0-9_-]{8,128}$/.test(token)) {
+    salir('Este código no es válido', ERR.tokenInvalido || '');
+    return;
+  }
+
+  /* ── Secciones visibles ─────────────────────────────────── */
+  ver($('sec-salud'), SEC.salud !== false);
+  ver($('sec-emergencia'), SEC.emergencia !== false);
+  ver($('sec-seguro'), SEC.seguro !== false);
+  ver($('sec-factura'), SEC.factura === true);
+  ver($('g-embarazo'), SEC.embarazoLactancia === true);
+
+  /* ── Aviso de privacidad ────────────────────────────────── */
+  var aviso = C.aviso || {};
+  if (!aviso.aprobado) { ver($('sello-borrador'), true); }
+  $('version-aviso').textContent = 'Versión ' + (aviso.version || '—') + ' · se desplaza para leerlo completo';
+
+  /* ── Identidad del consultorio (solo si el dueño la activó) ─ */
+  if (SEC.mostrarIdentidad !== false && C.supabase && C.supabase.url && C.supabase.anonKey && C.rpc && C.rpc.consultorioPublico) {
+    var cuerpoId = {};
+    cuerpoId[CAMPOS.token || 'p_token'] = token;
+    fetch(C.supabase.url + '/rest/v1/rpc/' + C.rpc.consultorioPublico, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': C.supabase.anonKey },
+      body: JSON.stringify(cuerpoId)
+    }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+      var x = Array.isArray(d) ? d[0] : d;
+      if (!x || !x.nombre) { return; }
+      $('ident-nombre').textContent = x.nombre;
+      $('ident-sub').textContent = 'Registro de paciente';
+      if (x.logo_url) {
+        var img = new Image();
+        img.alt = '';
+        img.src = x.logo_url;
+        var caja = $('ident-logo');
+        caja.innerHTML = '';
+        caja.appendChild(img);
+      }
+    })['catch'](function () { /* se queda el encabezado neutro */ });
+  }
+
+  /* ── Edad y persona responsable ─────────────────────────── */
+  var esMenor = false;
+  function calcularEdad() {
+    var v = val('nacimiento');
+    if (!v) { ver($('edad'), false); ver($('g-responsable'), false); esMenor = false; return null; }
+    var partes = v.split('-');
+    var n = new Date(+partes[0], (+partes[1]) - 1, +partes[2]);
+    var hoy = new Date();
+    if (isNaN(n.getTime()) || n > hoy || (+partes[0]) < 1900) { ver($('edad'), false); ver($('g-responsable'), false); esMenor = false; return null; }
+    var edad = hoy.getFullYear() - n.getFullYear();
+    var m = hoy.getMonth() - n.getMonth();
+    if (m < 0 || (m === 0 && hoy.getDate() < n.getDate())) { edad--; }
+    $('edad').textContent = 'Edad: ' + edad + ' años · se calcula sola';
+    ver($('edad'), true);
+    esMenor = edad < 18;
+    ver($('g-responsable'), esMenor);
+    return edad;
+  }
+  $('nacimiento').addEventListener('change', function () { limpiar('nacimiento'); calcularEdad(); });
+  $('nacimiento').setAttribute('max', new Date().toISOString().slice(0, 10));
+
+  $('sin-materno').addEventListener('change', function () {
+    var m = $('materno');
+    m.disabled = this.checked;
+    if (this.checked) { m.value = ''; limpiar('materno'); }
+  });
+
+  function conmutar(nombre, destino) {
+    document.querySelectorAll('input[name="' + nombre + '"]').forEach(function (r) {
+      r.addEventListener('change', function () { ver($(destino), this.value === 'si'); });
+    });
+  }
+  conmutar('seguro', 'g-seguro');
+  conmutar('factura', 'g-factura');
+
+  /* ── Validación ─────────────────────────────────────────── */
+  var correoRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+
+  function soloDigitos(s) { return (s || '').replace(/\D/g, ''); }
+
+  function validarPaso1() {
+    var ok = true;
+    ['nombres', 'paterno', 'materno', 'nacimiento', 'celular', 'correo', 'responsable', 'sexo'].forEach(limpiar);
+
+    var nom = val('nombres');
+    if (nom.length < 2 || nom.length > 120) { error('nombres', ERR.nombreInvalido); ok = false; }
+
+    if (val('paterno').length < 2) { error('paterno', ERR.apellidoInvalido); ok = false; }
+
+    if (!marcado('sin-materno') && val('materno').length < 2) { error('materno', ERR.apellidoMaternoInvalido); ok = false; }
+
+    var edad = calcularEdad();
+    if (edad === null) { error('nacimiento', ERR.fechaInvalida); ok = false; }
+    else if (esMenor && (val('resp-nombre').length < 2 || soloDigitos(val('resp-tel')).length !== 10)) {
+      var er = $('e-responsable'); er.textContent = ERR.responsableFaltante; ver(er, true); ok = false;
+    }
+
+    if (!elegido('sexo')) { var es = $('e-sexo'); es.textContent = ERR.sexoInvalido; ver(es, true); ok = false; }
+
+    if (soloDigitos(val('celular')).length !== 10) { error('celular', ERR.telefonoInvalido); ok = false; }
+
+    var cor = val('correo');
+    if (cor && !correoRe.test(cor)) { error('correo', ERR.correoInvalido); ok = false; }
+
+    return ok;
+  }
+
+  function validarPaso2() {
+    limpiar('correo-factura');
+    var cf = val('correo-factura');
+    if (elegido('factura') === 'si' && cf && !correoRe.test(cf)) {
+      error('correo-factura', ERR.correoInvalido);
+      return false;
+    }
+    return true;
+  }
+
+  /* ── Navegación entre pasos ─────────────────────────────── */
+  var paso = 1;
+  var textos = ['Paso 1 de 3 · Tus datos', 'Paso 2 de 3 · Tu salud y tus datos de pago', 'Paso 3 de 3 · Privacidad'];
+
+  function pintarPaso() {
+    ver($('paso1'), paso === 1);
+    ver($('paso2'), paso === 2);
+    ver($('paso3'), paso === 3);
+    $('b2').className = paso >= 2 ? 'on' : '';
+    $('b3').className = paso >= 3 ? 'on' : '';
+    $('paso-txt').textContent = textos[paso - 1];
+    ver($('atras'), paso > 1);
+    $('siguiente').textContent = paso === 3 ? 'Enviar mi registro' : 'Continuar';
+    window.scrollTo(0, 0);
+  }
+
+  function primerError() {
+    var e = document.querySelector('.error-campo:not(.oculto)');
+    if (e && e.scrollIntoView) { e.scrollIntoView({ block: 'center' }); }
+  }
+
+  $('atras').addEventListener('click', function () { if (paso > 1) { paso--; pintarPaso(); } });
+
+  $('siguiente').addEventListener('click', function () {
+    if (paso === 1) { if (!validarPaso1()) { return primerError(); } paso = 2; return pintarPaso(); }
+    if (paso === 2) { if (!validarPaso2()) { return primerError(); } paso = 3; return pintarPaso(); }
+    enviar();
+  });
+
+  /* ── Envío ──────────────────────────────────────────────── */
+  function arma() {
+    var p = {};
+    function set(clave, valor) {
+      var k = CAMPOS[clave] || clave;
+      if (valor !== '' && valor !== null && valor !== undefined) { p[k] = valor; }
+    }
+    set('nombres', val('nombres'));
+    set('apellidoPaterno', val('paterno'));
+    set('apellidoMaterno', marcado('sin-materno') ? '' : val('materno'));
+    set('sinApellidoMaterno', marcado('sin-materno'));
+    set('fechaNacimiento', val('nacimiento'));
+    set('sexo', elegido('sexo'));
+    set('celular', soloDigitos(val('celular')));
+    set('correo', val('correo'));
+    set('codigoPostal', val('cp'));
+    set('recordatorios', marcado('quiero-recordatorios') ? (val('recordatorios') || 'Sin preferencia') : 'Prefiero no recibir');
+
+    if (esMenor) {
+      set('responsableNombre', val('resp-nombre'));
+      set('responsableTelefono', soloDigitos(val('resp-tel')));
+    }
+    if (SEC.salud !== false) {
+      set('tipoSangre', val('sangre'));
+      set('alergias', val('alergias'));
+      set('enfermedades', val('enfermedades'));
+      set('medicamentos', val('medicamentos'));
+      set('cirugias', val('cirugias'));
+      set('antecedentesFamiliares', val('antecedentes'));
+      if (SEC.embarazoLactancia === true) { set('embarazoLactancia', elegido('embarazo')); }
+    }
+    if (SEC.emergencia !== false) {
+      set('emergenciaNombre', val('em-nombre'));
+      set('emergenciaParentesco', val('em-parentesco'));
+      set('emergenciaTelefono', soloDigitos(val('em-tel')));
+    }
+    if (SEC.seguro !== false && elegido('seguro')) {
+      set('tieneSeguro', elegido('seguro') === 'si');
+      if (elegido('seguro') === 'si') {
+        set('aseguradora', val('aseguradora'));
+        set('poliza', val('poliza'));
+        set('titularPoliza', val('titular'));
+        set('siniestroAbierto', marcado('siniestro'));
+      }
+    }
+    if (SEC.factura === true && elegido('factura')) {
+      set('necesitaFactura', elegido('factura') === 'si');
+      if (elegido('factura') === 'si') {
+        set('rfc', val('rfc').toUpperCase());
+        set('razonSocial', val('razon'));
+        set('regimenFiscal', val('regimen'));
+        set('cpFiscal', val('cp-fiscal'));
+        set('usoCfdi', val('uso-cfdi'));
+        set('correoFactura', val('correo-factura'));
+      }
+    }
+    set('motivoConsulta', val('motivo'));
+    set('comoNosConociste', val('conociste'));
+    set('medicoRefiere', val('refiere'));
+    return p;
+  }
+
+  function fallaEnvio(mensaje) {
+    $('error-envio-txt').textContent = mensaje;
+    ver($('error-envio'), true);
+    $('siguiente').disabled = false;
+    $('siguiente').textContent = 'Enviar mi registro';
+  }
+
+  function listo() {
+    var ahora = new Date();
+    $('sello').textContent = 'Consentimiento registrado el ' + ahora.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) +
+      ', ' + ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) + ' · aviso versión ' + ((C.aviso && C.aviso.version) || '—') + '.';
+    ver($('formulario'), false);
+    ver($('pantalla-ok'), true);
+    window.scrollTo(0, 0);
+  }
+
+  function enviar() {
+    ver($('error-envio'), false);
+    ver($('e-consiento'), false);
+
+    if (!marcado('consiento')) {
+      var ec = $('e-consiento');
+      ec.textContent = ERR.consentimientoFaltante;
+      ver(ec, true);
+      return primerError();
+    }
+
+    // Campo trampa: si viene lleno, es un bot. No se envía nada y se
+    // muestra la misma pantalla de éxito para no darle pistas.
+    if ($('apellido-extra').value !== '') { return listo(); }
+
+    if (!C.flags || !C.flags.formularioActivo || !C.supabase || !C.supabase.url || !C.supabase.anonKey) {
+      return fallaEnvio(ERR.noActivo);
+    }
+
+    $('siguiente').disabled = true;
+    $('siguiente').textContent = 'Enviando…';
+
+    var cuerpo = {};
+    cuerpo[CAMPOS.token || 'p_token'] = token;
+    cuerpo[CAMPOS.payload || 'p_payload'] = arma();
+    cuerpo[CAMPOS.consentimiento || 'p_consentimiento'] = true;
+    cuerpo[CAMPOS.avisoVersion || 'p_aviso_version'] = (C.aviso && C.aviso.version) || null;
+
+    fetch(C.supabase.url + '/rest/v1/rpc/' + C.rpc.registrarPrerregistro, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': C.supabase.anonKey },
+      body: JSON.stringify(cuerpo)
+    }).then(function (r) {
+      if (r.ok) { return listo(); }
+      if (r.status === 429) { return fallaEnvio(ERR.limiteExcedido); }
+      return r.text().then(function (t) {
+        var s = (t || '').toLowerCase();
+        if (r.status === 404 || s.indexOf('token') >= 0) { return fallaEnvio(ERR.tokenInvalido); }
+        if (s.indexOf('limit') >= 0 || s.indexOf('rate') >= 0) { return fallaEnvio(ERR.limiteExcedido); }
+        fallaEnvio(ERR.sinConexion);
+      });
+    })['catch'](function () { fallaEnvio(ERR.sinConexion); });
+  }
+
+  pintarPaso();
+})();
+</script>
+</body>
+</html>

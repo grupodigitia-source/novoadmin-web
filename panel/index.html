@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Panel de QR — Novo Admin</title>
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#FAF9F7">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Crect width='1024' height='1024' rx='200' fill='%23fff'/%3E%3Cg fill='none' stroke='%230a0a0a' stroke-width='87'%3E%3Cpath d='M216 450A186.500 186.500 0 1 1 345 450'/%3E%3Ccircle cx='742' cy='277' r='186.500'/%3E%3Cpath d='M361.800 572.400A186.500 186.500 0 1 1 189.600 576.900'/%3E%3Ccircle cx='742' cy='740' r='186.500'/%3E%3C/g%3E%3C/svg%3E">
+<link rel="stylesheet" href="../assets/novo.css">
+<style>
+  body { background: var(--bg-2); }
+  .barra { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; padding: 13px 24px; background: var(--bg); border-bottom: 1.5px solid var(--border); }
+  .logo { display: inline-flex; align-items: center; gap: 11px; font-size: 19px; font-weight: 700; letter-spacing: -0.03em; color: var(--ink); text-decoration: none; }
+  .logo svg { width: 34px; height: 34px; }
+  .logo .sub { font-weight: 500; color: var(--terra); }
+  main { max-width: 1000px; margin: 0 auto; padding: 32px 24px 56px; }
+  .fila { display: flex; flex-wrap: wrap; gap: 18px; align-items: stretch; }
+  .pendientes { position: relative; flex: 1 1 320px; min-width: 0; display: flex; flex-wrap: wrap; align-items: center; gap: 18px; padding: 24px 26px; border-color: var(--terra-mid); background: var(--terra-light); overflow: hidden; }
+  .pendientes .num { font-size: 46px; line-height: 1; color: var(--terra-deep); }
+  .liga { flex: 1 1 320px; min-width: 0; padding: 24px 26px; }
+  .liga code { display: block; padding: 11px 13px; border: 1.5px solid var(--border); border-radius: 11px; background: var(--bg-2); font-size: 13px; color: var(--ink-2); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .f2 { margin-top: 18px; padding: 24px 26px; }
+  .f2 ul { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+  .f2 li { display: flex; gap: 11px; align-items: flex-start; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
+  .f2 li svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; color: var(--subtle); }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+  <mask id="hueco" maskUnits="userSpaceOnUse" x="0" y="0" width="1024" height="1024"><rect width="1024" height="1024" fill="#fff"/><rect x="216" y="277" width="129" height="260" fill="#000"/></mask>
+  <symbol id="novo" viewBox="0 0 1024 1024"><g fill="none" stroke="currentColor" stroke-width="87"><circle cx="280" cy="277" r="186.5" mask="url(#hueco)"/><circle cx="742" cy="277" r="186.5"/><path d="M361.8 572.4A186.5 186.5 0 1 1 189.6 576.9"/><circle cx="742" cy="740" r="186.5"/></g></symbol>
+</defs></svg>
+
+<header class="barra">
+  <a class="logo" href="../index.html"><svg viewBox="0 0 1024 1024" aria-hidden="true"><use href="#novo"/></svg><span>Novo <span class="sub">Admin</span></span></a>
+  <span class="insignia ins-terra">Panel de QR · Médicos</span>
+  <button class="btn btn-fantasma" id="salir" type="button" style="margin-left:auto;min-height:40px;font-size:14px">Salir</button>
+</header>
+
+<main>
+  <h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Tu código QR</h1>
+  <p style="margin:0 0 26px;font-size:15px;color:var(--muted)">Comparte la liga o imprime el cartel para que tus pacientes se registren antes de llegar.</p>
+
+  <div id="aviso-cuenta" class="nota nota-arena oculto" role="alert" style="margin-bottom:20px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.4"/></svg>
+    <span>Tu cuenta entró bien, pero no tiene ningún consultorio asignado como dueño. Revísalo en la app, en Perfil, o escríbenos a <a href="mailto:soporte@novoadmin.com">soporte@novoadmin.com</a>.</span>
+  </div>
+
+  <div id="aviso-sesion" class="nota nota-arena oculto" role="alert" style="margin-bottom:20px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3L12 4zM12 10v4M12 17.4v.2"/></svg>
+    <span>Tu sesión no está activa. <a href="../entrar/">Vuelve a entrar</a> para ver los datos de tu consultorio.</span>
+  </div>
+
+  <div class="fila">
+    <div class="pendientes tarjeta">
+      <span class="marca-agua" aria-hidden="true"><svg viewBox="0 0 1024 1024" style="width:100%;height:100%;color:var(--ink)"><use href="#novo"/></svg></span>
+      <div style="position:relative">
+        <p style="margin:0 0 3px;font-size:13px;font-weight:500;color:var(--muted)">Prerregistros pendientes</p>
+        <p class="cifra num" id="num-pendientes" style="margin:0">—</p>
+      </div>
+      <p style="position:relative;flex:1 1 190px;min-width:0;margin:0;font-size:14px;line-height:1.5;color:var(--ink-2)">Confírmalos en la app, en <strong>Recepción › Prerregistros con QR</strong>. Ahí se unen con pacientes que ya existen.</p>
+    </div>
+
+    <div class="liga tarjeta">
+      <p style="margin:0 0 9px;font-size:13px;font-weight:500;color:var(--muted)">Liga pública de tu formulario</p>
+      <code id="liga">—</code>
+      <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap">
+        <button class="btn btn-fantasma" id="copiar" type="button" style="min-height:42px;font-size:14px">Copiar liga</button>
+        <a class="btn btn-fantasma" id="abrir" href="../registro-paciente/" style="min-height:42px;font-size:14px">Ver el formulario</a>
+      </div>
+      <p class="ayuda">El token va dentro de la liga. Nunca se muestra el identificador de tu consultorio.</p>
+    </div>
+  </div>
+
+  <div class="f2 tarjeta">
+    <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+      <h2 style="font-size:19px;font-weight:700;margin:0">Lo que sigue</h2>
+      <span class="insignia ins-arena">Fase 2</span>
+    </div>
+    <ul>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>Elegir qué secciones trae tu encuesta: Salud, Seguro, Factura, Contacto de emergencia.</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>Mostrar u ocultar el nombre y el logo de tu consultorio en el formulario.</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>Descargar el QR como imagen y el cartel listo para imprimir.</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>Rotar el QR cuando pierdas un cartel o cambies de local.</li>
+      <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/></svg>QR de campañas, con etiqueta propia y conteo por campaña.</li>
+    </ul>
+  </div>
+</main>
+
+<script src="../novo-config.js"></script>
+<script>
+(function () {
+  var C = window.NOVO_CONFIG || {};
+  var sesion = null;
+  try { sesion = JSON.parse(sessionStorage.getItem('novo_sesion') || 'null'); } catch (e) { sesion = null; }
+
+  document.getElementById('salir').addEventListener('click', function () {
+    try { sessionStorage.removeItem('novo_sesion'); } catch (e) {}
+    location.href = '../entrar/';
+  });
+
+  function sinSesion() { document.getElementById('aviso-sesion').classList.remove('oculto'); }
+  function sinConsultorio() { document.getElementById('aviso-cuenta').classList.remove('oculto'); }
+
+  if (!sesion || !sesion.token || (sesion.expira && Date.now() > sesion.expira)) { return sinSesion(); }
+  if (!C.supabase || !C.supabase.url || !C.supabase.anonKey) { return sinSesion(); }
+
+  fetch(C.supabase.url + '/rest/v1/rpc/' + C.rpc.qrDelDueno, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'apikey': C.supabase.anonKey,
+      'Authorization': 'Bearer ' + sesion.token
+    },
+    body: '{}'
+  }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
+    if (!d) { return sinSesion(); }
+    var dato = Array.isArray(d) ? d[0] : d;
+    if (!dato || !dato.token) { return sinConsultorio(); }
+
+    if (dato.token) {
+      var liga = location.origin + location.pathname.replace(/panel\/?$/, '') + 'registro-paciente/?t=' + encodeURIComponent(dato.token);
+      document.getElementById('liga').textContent = liga;
+      document.getElementById('abrir').setAttribute('href', '../registro-paciente/?t=' + encodeURIComponent(dato.token));
+      document.getElementById('copiar').addEventListener('click', function () {
+        var b = this;
+        navigator.clipboard.writeText(liga).then(function () {
+          b.textContent = 'Copiada';
+          setTimeout(function () { b.textContent = 'Copiar liga'; }, 2000);
+        })['catch'](function () { b.textContent = 'No se pudo copiar'; });
+      });
+    }
+    if (typeof dato.pendientes === 'number') {
+      document.getElementById('num-pendientes').textContent = dato.pendientes;
+    }
+  })['catch'](sinSesion);
+})();
+</script>
+</body>
+</html>
