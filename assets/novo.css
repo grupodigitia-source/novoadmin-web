@@ -1,0 +1,134 @@
+/* Novo Admin — hoja compartida de la sección QRs.
+   Fuentes servidas desde este mismo repo: la página del formulario
+   no hace ninguna petición a terceros. */
+
+@font-face { font-family: 'Inter'; src: url('fuentes/inter-latin-400-normal.woff2') format('woff2'); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('fuentes/inter-latin-500-normal.woff2') format('woff2'); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('fuentes/inter-latin-600-normal.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Inter'; src: url('fuentes/inter-latin-700-normal.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Sora'; src: url('fuentes/sora-latin-600-normal.woff2') format('woff2'); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Sora'; src: url('fuentes/sora-latin-700-normal.woff2') format('woff2'); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: 'Sora'; src: url('fuentes/sora-latin-800-normal.woff2') format('woff2'); font-weight: 800; font-style: normal; font-display: swap; }
+
+:root {
+  /* Tokens del sistema de diseño de la app ("Quiet Confidence") */
+  --bg: #FFFFFF;
+  --bg-2: #FAF9F7;
+  --bg-3: #F3F1EE;
+  --border: #EDE9E4;
+  --faint: #E7E3DE;
+  --ink: #1C1917;
+  --ink-2: #44403C;
+  --muted: #78716C;
+  --subtle: #A8A29E;
+  --terra: #C17A5A;
+  --terra-deep: #A9623F;
+  --terra-light: #F5EDE8;
+  --terra-mid: #E8C4B0;
+  --sage: #7A9E87;
+  --sage-deep: #3F6B50;
+  --sage-light: #EBF3EE;
+  --sand: #D4A853;
+  --sand-deep: #7A5A12;
+  --sand-light: #FDF4E3;
+  --danger: #D95F5F;
+  --danger-deep: #8E3330;
+  --danger-light: #FDEAEA;
+  --sombra: 0 1px 4px rgba(28,25,23,0.05);
+  --sombra-alta: 0 2px 8px rgba(28,25,23,0.07), 0 16px 32px rgba(28,25,23,0.06);
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+
+h1, h2, h3 { font-family: 'Sora', 'Inter', system-ui, sans-serif; letter-spacing: -0.02em; line-height: 1.15; margin: 0; }
+.cifra { font-family: 'Sora', 'Inter', system-ui, sans-serif; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+
+a { color: var(--terra-deep); }
+a:hover { color: #8A4E33; }
+:focus-visible { outline: 2px solid var(--terra-deep); outline-offset: 3px; }
+
+/* Botones — radios de la app: 11px */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  min-height: 48px; padding: 0 20px;
+  font: inherit; font-size: 15px; font-weight: 600; line-height: 1;
+  border: 1.5px solid transparent; border-radius: 11px;
+  cursor: pointer; text-decoration: none;
+  transition: background-color .18s ease, border-color .18s ease;
+}
+.btn[disabled], .btn.off { background: var(--faint); color: var(--muted); border-color: var(--faint); cursor: not-allowed; }
+.btn-primario { background: var(--terra-deep); color: #FFFFFF; }
+.btn-primario:hover { background: #8A4E33; color: #FFFFFF; }
+.btn-suave { background: var(--terra-light); color: var(--terra-deep); border-color: var(--terra-mid); }
+.btn-fantasma { background: var(--bg); color: var(--ink-2); border-color: var(--border); }
+.btn-fantasma:hover { border-color: var(--ink-2); color: var(--ink-2); }
+.btn-peligro { background: var(--bg); color: var(--danger-deep); border-color: rgba(217,95,95,0.45); }
+.btn-ancho { width: 100%; }
+
+/* Tarjetas — sombras y bordes, nunca glass (principio de la app) */
+.tarjeta { background: var(--bg); border: 1.5px solid var(--border); border-radius: 18px; box-shadow: var(--sombra); }
+.tarjeta-plana { background: var(--bg-2); border: 1.5px solid var(--border); border-radius: 14px; }
+
+/* Campos */
+.etiqueta { display: block; font-size: 13px; font-weight: 600; color: var(--ink-2); margin-bottom: 7px; }
+.etiqueta .opc { font-weight: 400; color: var(--muted); }
+.req { color: var(--terra-deep); }
+.campo {
+  width: 100%; min-height: 50px; padding: 13px 14px;
+  font: inherit; font-size: 16px; color: var(--ink);
+  background: var(--bg); border: 1.5px solid var(--border); border-radius: 11px;
+  box-shadow: 0 1px 2px rgba(28,25,23,0.04);
+}
+textarea.campo { min-height: 84px; resize: vertical; line-height: 1.5; }
+select.campo { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'%3E%3Cpath d='M1 1.5L6 6.5l5-5' fill='none' stroke='%2378716C' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; background-size: 12px; padding-right: 38px; }
+.campo:focus { outline: none; border-color: var(--terra); background: var(--terra-light); }
+.campo.malo { border-color: var(--danger); background: var(--danger-light); }
+.ayuda { margin: 7px 0 0; font-size: 12.5px; line-height: 1.45; color: var(--muted); }
+.error-campo { margin: 7px 0 0; font-size: 13px; line-height: 1.45; font-weight: 500; color: var(--danger-deep); }
+.grupo { margin-bottom: 18px; }
+
+input[type="checkbox"], input[type="radio"] { accent-color: var(--terra-deep); width: 20px; height: 20px; flex-shrink: 0; cursor: pointer; }
+
+/* Opciones en fila (sexo, sí/no) */
+.opciones { display: flex; gap: 8px; }
+.opcion { flex: 1; display: flex; align-items: center; justify-content: center; gap: 8px; min-height: 50px; padding: 0 10px; font-size: 15px; color: var(--ink-2); background: var(--bg); border: 1.5px solid var(--border); border-radius: 11px; cursor: pointer; text-align: center; }
+.opcion input { width: 16px; height: 16px; }
+.opcion:has(input:checked) { border-color: var(--terra); background: var(--terra-light); color: var(--ink); font-weight: 600; }
+
+.casilla { display: flex; gap: 12px; align-items: flex-start; padding: 15px; border: 1.5px solid var(--border); border-radius: 11px; cursor: pointer; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
+.casilla:has(input:checked) { border-color: var(--terra); background: var(--terra-light); }
+
+/* Avisos */
+.nota { display: flex; gap: 11px; align-items: flex-start; padding: 14px 16px; border: 1.5px solid var(--border); border-radius: 11px; background: var(--bg-2); font-size: 13.5px; line-height: 1.5; color: var(--ink-2); }
+.nota svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 1px; }
+.nota-terra { border-color: var(--terra-mid); background: var(--terra-light); }
+.nota-arena { border-color: rgba(212,168,83,0.5); background: var(--sand-light); color: #6B4F10; }
+.nota-roja { border-color: rgba(217,95,95,0.4); background: var(--danger-light); color: var(--danger-deep); }
+.nota-verde { border-color: rgba(122,158,135,0.4); background: var(--sage-light); color: #35583F; }
+
+.insignia { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 7px; font-size: 11.5px; font-weight: 600; }
+.ins-terra { background: var(--terra-light); color: var(--terra-deep); border: 1px solid var(--terra-mid); }
+.ins-verde { background: var(--sage-light); color: var(--sage-deep); border: 1px solid rgba(122,158,135,0.3); }
+.ins-arena { background: var(--sand-light); color: var(--sand-deep); border: 1px solid rgba(212,168,83,0.35); }
+
+/* Marca de agua del logo — el fondo que ya usa la app */
+.marca-agua { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 320px; height: 320px; opacity: 0.028; pointer-events: none; z-index: 0; }
+.resplandor { position: absolute; top: 0; right: 0; width: 180px; height: 180px; border-radius: 50%; background: radial-gradient(circle, rgba(193,122,90,0.08) 0%, transparent 70%); transform: translate(40%,-40%); pointer-events: none; }
+
+.oculto { display: none !important; }
+
+/* Campo trampa: fuera de la vista, nunca enfocable */
+.trampa { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
