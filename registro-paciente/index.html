@@ -117,13 +117,13 @@
 
         <div class="grupo">
           <label class="etiqueta" for="paterno">Apellido paterno <span class="req">*</span></label>
-          <input class="campo" id="paterno" name="paterno" type="text" maxlength="120" autocomplete="family-name" required>
+          <input class="campo" id="paterno" name="paterno" type="text" maxlength="80" autocomplete="family-name" required>
           <p class="error-campo oculto" id="e-paterno"></p>
         </div>
 
         <div class="grupo">
           <label class="etiqueta" for="materno">Apellido materno <span class="req">*</span></label>
-          <input class="campo" id="materno" name="materno" type="text" maxlength="120" required>
+          <input class="campo" id="materno" name="materno" type="text" maxlength="80" required>
           <label class="casilla" for="sin-materno" style="margin-top:10px">
             <input id="sin-materno" type="checkbox">
             <span>No tengo apellido materno</span>
@@ -151,9 +151,10 @@
         <div class="grupo">
           <span class="etiqueta" id="lbl-sexo">Sexo <span class="req">*</span></span>
           <div class="opciones" role="radiogroup" aria-labelledby="lbl-sexo">
-            <label class="opcion" for="sx-f"><input id="sx-f" type="radio" name="sexo" value="Femenino">Femenino</label>
-            <label class="opcion" for="sx-m"><input id="sx-m" type="radio" name="sexo" value="Masculino">Masculino</label>
-            <label class="opcion" for="sx-o" style="flex:0 0 92px"><input id="sx-o" type="radio" name="sexo" value="Otro">Otro</label>
+            <!-- Los valores F / M / X son los que acepta la función de la base. -->
+            <label class="opcion" for="sx-f"><input id="sx-f" type="radio" name="sexo" value="F">Femenino</label>
+            <label class="opcion" for="sx-m"><input id="sx-m" type="radio" name="sexo" value="M">Masculino</label>
+            <label class="opcion" for="sx-o" style="flex:0 0 92px"><input id="sx-o" type="radio" name="sexo" value="X">Otro</label>
           </div>
           <p class="error-campo oculto" id="e-sexo"></p>
         </div>
@@ -174,13 +175,18 @@
         <div class="grupo">
           <label class="etiqueta" for="cp">Código postal <span class="opc">· opcional</span></label>
           <input class="campo" id="cp" name="cp" type="text" inputmode="numeric" maxlength="5" autocomplete="postal-code">
+          <p class="error-campo oculto" id="e-cp"></p>
         </div>
 
         <div class="grupo">
           <label class="etiqueta" for="recordatorios">¿Cómo prefieres tus recordatorios? <span class="opc">· opcional</span></label>
+          <!-- Valores de PREF_RECORDATORIO en src/lib/registroQr.ts -->
           <select class="campo" id="recordatorios">
             <option value="">Sin preferencia</option>
-            <option>WhatsApp</option><option>Mensaje de texto</option><option>Correo</option><option>Prefiero no recibir</option>
+            <option value="whatsapp">WhatsApp</option>
+            <option value="sms">Mensaje de texto</option>
+            <option value="correo">Correo</option>
+            <option value="llamada">Llamada</option>
           </select>
         </div>
       </div>
@@ -194,8 +200,14 @@
           <h2 style="font-size:17px;font-weight:700;margin-bottom:14px">Salud</h2>
           <div class="grupo">
             <label class="etiqueta" for="sangre">Tipo de sangre</label>
+            <!-- Valores de TIPOS_SANGRE en src/lib/registroQr.ts -->
             <select class="campo" id="sangre">
-              <option value="">No sé</option><option>O+</option><option>O−</option><option>A+</option><option>A−</option><option>B+</option><option>B−</option><option>AB+</option><option>AB−</option>
+              <option value="">Prefiero no decir</option>
+              <option value="no_se">No sé</option>
+              <option value="O+">O+</option><option value="O-">O−</option>
+              <option value="A+">A+</option><option value="A-">A−</option>
+              <option value="B+">B+</option><option value="B-">B−</option>
+              <option value="AB+">AB+</option><option value="AB-">AB−</option>
             </select>
           </div>
           <div class="grupo"><label class="etiqueta" for="alergias">Alergias</label><textarea class="campo" id="alergias" rows="2" placeholder="Medicamentos, alimentos, otras"></textarea></div>
@@ -205,20 +217,25 @@
           <div class="grupo"><label class="etiqueta" for="antecedentes">Antecedentes familiares</label><textarea class="campo" id="antecedentes" rows="2"></textarea></div>
           <div class="grupo oculto" id="g-embarazo">
             <span class="etiqueta" id="lbl-emb">¿Estás embarazada o en lactancia?</span>
+            <!-- Valores no / embarazo / lactancia (FormRegistro.embarazoLactancia) -->
             <div class="opciones" role="radiogroup" aria-labelledby="lbl-emb">
-              <label class="opcion" for="emb-si"><input id="emb-si" type="radio" name="embarazo" value="Sí">Sí</label>
-              <label class="opcion" for="emb-no"><input id="emb-no" type="radio" name="embarazo" value="No">No</label>
-              <label class="opcion" for="emb-na" style="flex:0 0 108px"><input id="emb-na" type="radio" name="embarazo" value="No aplica">No aplica</label>
+              <label class="opcion" for="emb-emb"><input id="emb-emb" type="radio" name="embarazo" value="embarazo">Embarazo</label>
+              <label class="opcion" for="emb-lac"><input id="emb-lac" type="radio" name="embarazo" value="lactancia">Lactancia</label>
+              <label class="opcion" for="emb-no" style="flex:0 0 92px"><input id="emb-no" type="radio" name="embarazo" value="no">No</label>
             </div>
           </div>
         </div>
 
         <div class="seccion" id="sec-emergencia">
           <h2>Contacto de emergencia</h2>
-          <div class="grupo"><input class="campo" id="em-nombre" type="text" placeholder="Nombre" aria-label="Nombre del contacto de emergencia"></div>
-          <div class="grupo" style="display:flex;gap:10px">
-            <input class="campo" id="em-parentesco" type="text" placeholder="Parentesco" aria-label="Parentesco" style="flex:1;min-width:0">
-            <input class="campo" id="em-tel" type="tel" inputmode="numeric" placeholder="Teléfono" aria-label="Teléfono de emergencia" style="flex:1;min-width:0">
+          <div class="grupo"><input class="campo" id="em-nombre" type="text" maxlength="120" placeholder="Nombre" aria-label="Nombre del contacto de emergencia"></div>
+          <!-- El grupo "emergencia" del payload solo tiene nombre y telefono
+               (ver validarRegistro en src/lib/registroQr.ts). El campo
+               Parentesco queda fuera para no pedir un dato que nadie leería;
+               vuelve en cuanto registroQr.ts defina su clave. -->
+          <div class="grupo">
+            <input class="campo" id="em-tel" type="tel" inputmode="numeric" maxlength="14" placeholder="Teléfono" aria-label="Teléfono de emergencia">
+            <p class="error-campo oculto" id="e-em-tel"></p>
           </div>
         </div>
 
@@ -232,9 +249,9 @@
             </div>
           </div>
           <div class="bloque-cond oculto" id="g-seguro">
-            <input class="campo" id="aseguradora" type="text" placeholder="Aseguradora" aria-label="Aseguradora" style="margin-bottom:10px">
-            <input class="campo" id="poliza" type="text" placeholder="Número de póliza" aria-label="Número de póliza" style="margin-bottom:10px">
-            <input class="campo" id="titular" type="text" placeholder="Titular de la póliza" aria-label="Titular de la póliza" style="margin-bottom:10px">
+            <input class="campo" id="aseguradora" type="text" maxlength="120" placeholder="Aseguradora" aria-label="Aseguradora" style="margin-bottom:10px">
+            <input class="campo" id="poliza" type="text" maxlength="60" placeholder="Número de póliza" aria-label="Número de póliza" style="margin-bottom:10px">
+            <input class="campo" id="titular" type="text" maxlength="120" placeholder="Titular de la póliza" aria-label="Titular de la póliza" style="margin-bottom:10px">
             <label class="casilla" for="siniestro" style="background:var(--bg)"><input id="siniestro" type="checkbox"><span>Tengo un siniestro abierto</span></label>
           </div>
         </div>
@@ -249,19 +266,23 @@
             </div>
           </div>
           <div class="bloque-cond oculto" id="g-factura">
-            <input class="campo" id="rfc" type="text" placeholder="RFC" aria-label="RFC" maxlength="13" style="margin-bottom:10px;text-transform:uppercase">
-            <input class="campo" id="razon" type="text" placeholder="Nombre o razón social, como en tu constancia" aria-label="Nombre o razón social" style="margin-bottom:10px">
-            <input class="campo" id="regimen" type="text" placeholder="Régimen fiscal" aria-label="Régimen fiscal" style="margin-bottom:10px">
-            <input class="campo" id="cp-fiscal" type="text" inputmode="numeric" maxlength="5" placeholder="C.P. fiscal" aria-label="Código postal fiscal" style="margin-bottom:10px">
-            <input class="campo" id="uso-cfdi" type="text" placeholder="Uso de CFDI" aria-label="Uso de CFDI" style="margin-bottom:10px">
+            <input class="campo" id="rfc" type="text" placeholder="RFC" aria-label="RFC" maxlength="13" style="margin-bottom:4px;text-transform:uppercase">
+            <p class="error-campo oculto" id="e-rfc" style="margin-bottom:8px"></p>
+            <input class="campo" id="razon" type="text" maxlength="200" placeholder="Nombre o razón social, como en tu constancia" aria-label="Nombre o razón social" style="margin-bottom:4px">
+            <p class="error-campo oculto" id="e-razon" style="margin-bottom:8px"></p>
+            <input class="campo" id="regimen" type="text" inputmode="numeric" maxlength="3" placeholder="Régimen fiscal (3 dígitos, ej. 605)" aria-label="Régimen fiscal" style="margin-bottom:4px">
+            <p class="error-campo oculto" id="e-regimen" style="margin-bottom:8px"></p>
+            <input class="campo" id="cp-fiscal" type="text" inputmode="numeric" maxlength="5" placeholder="C.P. fiscal" aria-label="Código postal fiscal" style="margin-bottom:4px">
+            <p class="error-campo oculto" id="e-cp-fiscal" style="margin-bottom:8px"></p>
+            <input class="campo" id="uso-cfdi" type="text" maxlength="10" placeholder="Uso de CFDI" aria-label="Uso de CFDI" style="margin-bottom:10px;text-transform:uppercase">
             <input class="campo" id="correo-factura" type="email" inputmode="email" placeholder="Correo para la factura" aria-label="Correo para la factura">
             <p class="error-campo oculto" id="e-correo-factura"></p>
           </div>
         </div>
 
-        <div class="seccion">
+        <div class="seccion" id="sec-extras">
           <h2>Tu visita</h2>
-          <div class="grupo"><label class="etiqueta" for="motivo">Motivo de consulta</label><textarea class="campo" id="motivo" rows="2"></textarea></div>
+          <div class="grupo"><label class="etiqueta" for="motivo">Motivo de consulta</label><textarea class="campo" id="motivo" rows="2" maxlength="400"></textarea></div>
           <div class="grupo">
             <label class="etiqueta" for="conociste">¿Cómo nos conociste?</label>
             <select class="campo" id="conociste">
@@ -269,7 +290,7 @@
               <option>Me recomendaron</option><option>Redes sociales</option><option>Pasé por el consultorio</option><option>Volante o cartel</option><option>Mi aseguradora</option><option>Otro</option>
             </select>
           </div>
-          <div class="grupo"><label class="etiqueta" for="refiere">Médico que te refiere</label><input class="campo" id="refiere" type="text"></div>
+          <div class="grupo"><label class="etiqueta" for="refiere">Médico que te refiere</label><input class="campo" id="refiere" type="text" maxlength="120"></div>
         </div>
       </div>
 
@@ -280,25 +301,22 @@
           <span class="insignia ins-arena">Texto provisional · pendiente de aprobación</span>
         </p>
 
-        <div class="aviso-caja" tabindex="0" role="region" aria-label="Aviso de privacidad">
-          <p><strong>Quién trata tus datos.</strong> El consultorio donde te estás registrando es el responsable del uso y la protección de los datos personales que compartes en este formulario.</p>
-          <p><strong>Para qué los usamos.</strong> Para darte de alta como paciente, abrir y mantener tu expediente clínico, agendar tus citas y enviarte recordatorios y, si lo pides, emitir tu factura y gestionar tu seguro de gastos médicos.</p>
-          <p><strong>Datos sensibles.</strong> Los datos de salud que nos das (alergias, padecimientos, medicamentos, antecedentes) son datos personales sensibles conforme a la Ley Federal de Protección de Datos Personales en Posesión de los Particulares. Por eso necesitamos tu consentimiento expreso antes de guardarlos.</p>
-          <p><strong>Con quién los compartimos.</strong> Con nadie, salvo con tu aseguradora cuando tú lo solicites y con las autoridades cuando la ley lo exija. No los usamos para publicidad ni los vendemos.</p>
-          <p><strong>Tus derechos ARCO.</strong> Puedes acceder, rectificar, cancelar u oponerte al uso de tus datos, y retirar este consentimiento, escribiendo al consultorio.</p>
-          <p><strong>Versión.</strong> Guardamos la fecha, la hora y la versión del aviso que aceptaste.</p>
-        </div>
+        <!-- El aviso lo publica cada consultorio (registro_qr_config) y
+             llega en marca_registro_qr. Esta caja la llena el guion con
+             la plantilla de textoAviso() de src/lib/registroQr.ts. -->
+        <h2 id="aviso-h2" style="font-size:17px;font-weight:700;margin-bottom:12px"></h2>
+        <div class="aviso-caja" id="aviso-caja" tabindex="0" role="region" aria-label="Aviso de privacidad"></div>
         <p class="ayuda" id="version-aviso"></p>
 
         <label class="casilla" for="consiento" style="margin-top:18px">
           <input id="consiento" type="checkbox" required>
-          <span>He leído el aviso de privacidad y <strong>doy mi consentimiento expreso</strong> para que mis datos de salud se traten como ahí se explica. <span class="req">*</span></span>
+          <span><span id="txt-casilla-1"></span> <span class="req">*</span></span>
         </label>
         <p class="error-campo oculto" id="e-consiento"></p>
 
-        <label class="casilla" for="quiero-recordatorios" style="margin-top:10px">
-          <input id="quiero-recordatorios" type="checkbox">
-          <span>Quiero recibir recordatorios de mis citas. <span class="opc">Opcional</span></span>
+        <label class="casilla" for="acepta-promociones" style="margin-top:10px">
+          <input id="acepta-promociones" type="checkbox">
+          <span id="txt-casilla-2"></span>
         </label>
 
         <div id="error-envio" class="nota nota-roja oculto" role="alert" style="margin-top:18px">
@@ -322,18 +340,50 @@
 
 <script src="../novo-config.js"></script>
 <script>
+/* ──────────────────────────────────────────────────────────────
+   Formulario público de alta de pacientes.
+
+   Habla con dos funciones de la base, y con ninguna otra:
+     marca_registro_qr(p_token)            → lista; vacía = token malo
+     enviar_prerregistro_qr(p_token, p_payload, p_consentimiento,
+                            p_aviso_version, p_trampa,
+                            p_acepta_promociones) → void
+
+   Las reglas de validación y las claves del payload son las de
+   validarRegistro() en src/lib/registroQr.ts, para que recepción
+   lea en la app exactamente lo que el paciente escribió aquí.
+
+   Con FORMULARIO_ACTIVO = false no se hace ni una petición de red.
+   ────────────────────────────────────────────────────────────── */
 (function () {
   'use strict';
   var C = window.NOVO_CONFIG || {};
   var ERR = C.errores || {};
-  var CAMPOS = C.campos || {};
-  var SEC = C.seccionesPorDefecto || {};
+  var EDB = ERR.db || {};
+  var A = C.args || {};
+  var PL = (C.payload && C.payload.plano) || {};
+  var GR = (C.payload && C.payload.grupos) || {};
+  var SB = C.supabase || {};
+  var RPC = C.rpc || {};
+
+  var SEC = {};
+  (function () {
+    var base = C.seccionesPorDefecto || {};
+    ['salud', 'seguro', 'factura', 'emergencia', 'embarazo', 'extras'].forEach(function (k) {
+      SEC[k] = base[k] === true;
+    });
+  })();
+
+  var AVISO = null;   // lo publica el consultorio; llega en marca_registro_qr
 
   var $ = function (id) { return document.getElementById(id); };
   function ver(el, mostrar) { if (el) { el.classList[mostrar ? 'remove' : 'add']('oculto'); } }
   function val(id) { var e = $(id); return e ? e.value.trim() : ''; }
   function marcado(id) { var e = $(id); return !!(e && e.checked); }
   function elegido(nombre) { var e = document.querySelector('input[name="' + nombre + '"]:checked'); return e ? e.value : ''; }
+  function limpio(s, max) { return (s || '').replace(/\s+/g, ' ').trim().slice(0, max || 400); }
+  function soloDigitos(s) { return (s || '').replace(/\D/g, ''); }
+  function oNulo(s) { return s ? s : null; }
 
   function error(campoId, mensaje) {
     var e = $('e-' + campoId), c = $(campoId);
@@ -345,6 +395,10 @@
     if (e) { ver(e, false); }
     if (c) { c.classList.remove('malo'); }
   }
+  function primerError() {
+    var e = document.querySelector('.error-campo:not(.oculto)');
+    if (e && e.scrollIntoView) { e.scrollIntoView({ block: 'center' }); }
+  }
 
   function salir(titulo, texto) {
     ver($('formulario'), false);
@@ -352,68 +406,157 @@
     $('aviso-titulo').textContent = titulo;
     $('aviso-texto').textContent = texto;
     ver($('pantalla-aviso'), true);
+    window.scrollTo(0, 0);
   }
 
-  /* ── Interruptor: si esta apagado, no se envia nada ─────── */
+  /* ── 1 · Interruptor: si está apagado, no se toca la red ─────── */
   if (typeof FORMULARIO_ACTIVO === 'undefined' || FORMULARIO_ACTIVO !== true) {
     salir('Este registro aún no está disponible', 'Avisa en recepción.');
     return;
   }
 
-  /* ── Token ──────────────────────────────────────────────── */
+  /* ── 2 · Token del QR ───────────────────────────────────────── */
   var token = '';
   try { token = (new URLSearchParams(location.search).get('t') || '').trim(); } catch (e) { token = ''; }
 
   if (!token) {
-    salir('Falta el código', ERR.tokenFaltante || 'Vuelve a escanear el QR del consultorio.');
+    salir('Falta el código', ERR.tokenFaltante || '');
     return;
   }
-  if (!/^[A-Za-z0-9_-]{8,128}$/.test(token)) {
+  // Mismo formato que esTokenQr() en src/lib/registroQr.ts
+  if (!/^[A-Za-z0-9_-]{16,64}$/.test(token)) {
     salir('Este código no es válido', ERR.tokenInvalido || '');
     return;
   }
 
-  /* ── Secciones visibles ─────────────────────────────────── */
-  ver($('sec-salud'), SEC.salud !== false);
-  ver($('sec-emergencia'), SEC.emergencia !== false);
-  ver($('sec-seguro'), SEC.seguro !== false);
-  ver($('sec-factura'), SEC.factura === true);
-  ver($('g-embarazo'), SEC.embarazoLactancia === true);
+  /* ── 3 · Sin conexión configurada, no se pide nada ──────────── */
+  if (!C.flags || C.flags.formularioActivo !== true || !SB.url || !SB.anonKey || !RPC.marca || !RPC.enviarPrerregistro) {
+    salir('Este registro aún no está disponible', ERR.noActivo || '');
+    return;
+  }
 
-  /* ── Aviso de privacidad ────────────────────────────────── */
-  var aviso = C.aviso || {};
-  if (!(FORMULARIO_ACTIVO === true && aviso.aprobado === true)) { ver($('sello-borrador'), true); }
-  $('version-aviso').textContent = 'Versión ' + (aviso.version || '—') + ' · se desplaza para leerlo completo';
-
-  /* ── Identidad del consultorio (solo si el dueño la activó) ─ */
-  if (SEC.mostrarIdentidad !== false && C.supabase && C.supabase.url && C.supabase.anonKey && C.rpc && C.rpc.consultorioPublico) {
-    var cuerpoId = {};
-    cuerpoId[CAMPOS.token || 'p_token'] = token;
-    fetch(C.supabase.url + '/rest/v1/rpc/' + C.rpc.consultorioPublico, {
+  /* ── 4 · Consultorio, secciones y aviso ─────────────────────── */
+  function pedir(funcion, cuerpo) {
+    return fetch(SB.url + '/rest/v1/rpc/' + funcion, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': C.supabase.anonKey },
-      body: JSON.stringify(cuerpoId)
-    }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-      var x = Array.isArray(d) ? d[0] : d;
-      if (!x || !x.nombre) { return; }
-      $('ident-nombre').textContent = x.nombre;
+      headers: { 'Content-Type': 'application/json', 'apikey': SB.anonKey },
+      body: JSON.stringify(cuerpo)
+    });
+  }
+
+  function leerAviso(v) {
+    if (!v || typeof v !== 'object' || Array.isArray(v)) { return null; }
+    var t = function (x) { return typeof x === 'string' ? x.trim() : ''; };
+    var a = {
+      responsable: t(v.responsable),
+      domicilio: t(v.domicilio),
+      correoArco: t(v.correo_arco),
+      version: t(v.version),
+      fecha: t(v.fecha) || null
+    };
+    return (a.responsable && a.domicilio && a.correoArco && a.version) ? a : null;
+  }
+
+  var cuerpoMarca = {};
+  cuerpoMarca[A.token || 'p_token'] = token;
+
+  pedir(RPC.marca, cuerpoMarca).then(function (r) {
+    if (!r.ok) { throw new Error('marca'); }
+    return r.json();
+  }).then(function (d) {
+    var fila = Array.isArray(d) ? d[0] : d;
+    // Lista vacía = token inválido o desactivado por el consultorio.
+    if (!fila) {
+      salir('Este código ya no está activo', EDB.token_invalido || ERR.tokenInvalido || '');
+      return;
+    }
+    AVISO = leerAviso(fila.aviso);
+    if (!AVISO) {
+      salir('Registro en línea no disponible', ERR.sinAviso || '');
+      return;
+    }
+    arrancar(fila);
+  })['catch'](function () {
+    salir('Este registro aún no está disponible', ERR.noActivo || '');
+  });
+
+  /* ── 5 · Armado de la página ────────────────────────────────── */
+  function arrancar(fila) {
+    // Identidad: solo si el dueño activó mostrar su marca.
+    if (fila.nombre) {
+      $('ident-nombre').textContent = fila.nombre;
       $('ident-sub').textContent = 'Registro de paciente';
-      if (x.logo_url) {
+      if (fila.logo_url) {
         var img = new Image();
         img.alt = '';
-        img.src = x.logo_url;
+        img.src = fila.logo_url;
         var caja = $('ident-logo');
         caja.innerHTML = '';
         caja.appendChild(img);
       }
-    })['catch'](function () { /* se queda el encabezado neutro */ });
+    }
+
+    // Secciones: las manda el consultorio; solo booleanos.
+    if (fila.secciones && typeof fila.secciones === 'object' && !Array.isArray(fila.secciones)) {
+      Object.keys(SEC).forEach(function (k) {
+        if (typeof fila.secciones[k] === 'boolean') { SEC[k] = fila.secciones[k]; }
+      });
+    }
+    ver($('sec-salud'), SEC.salud);
+    ver($('sec-emergencia'), SEC.emergencia);
+    ver($('sec-seguro'), SEC.seguro);
+    ver($('sec-factura'), SEC.factura);
+    ver($('sec-extras'), SEC.extras);
+    ver($('g-embarazo'), false);   // se abre solo si sexo = F
+
+    pintarAviso();
+    conectar();
+    pintarPaso();
   }
 
-  /* ── Edad y persona responsable ─────────────────────────── */
+  /* ── 6 · Aviso de privacidad del consultorio ────────────────── */
+  function pintarAviso() {
+    var a = AVISO;
+    var prefijo = (C.aviso && C.aviso.prefijoBorrador) || '';
+    if (prefijo && a.version.indexOf(prefijo) === 0) { ver($('sello-borrador'), true); }
+
+    $('aviso-h2').textContent = 'Aviso de privacidad integral';
+    var parrafos = [
+      '1. Identidad y domicilio del responsable. ' + a.responsable + ', con domicilio en ' + a.domicilio + ' (en adelante, "el Consultorio"), es responsable del tratamiento de sus datos personales.',
+      '2. Datos personales que se tratan. Identificación y contacto: nombre completo, fecha de nacimiento, sexo, teléfono celular, correo electrónico, código postal, forma preferida de recibir recordatorios, contacto de emergencia y, si el paciente es menor de edad, datos de su madre, padre o tutor. Datos de salud (datos personales sensibles): tipo de sangre, alergias, enfermedades, medicamentos actuales, cirugías, antecedentes familiares, motivo de consulta y la información del expediente clínico. Datos de seguro, si los proporciona. Datos fiscales, solo si solicita factura. Cómo conoció el Consultorio y el médico que lo refiere, si lo indica.',
+      '3. Datos sensibles. Los datos de salud son sensibles. El Consultorio solo los trata con su consentimiento expreso, que usted otorga marcando la casilla correspondiente.',
+      '4. Finalidades necesarias: registrarlo como paciente y abrir su expediente clínico; agendar, atender y dar seguimiento a sus consultas; cumplir las obligaciones del expediente clínico (NOM-004-SSA3-2012); cobro y, si lo solicita, facturación; contactarlo para confirmar o reprogramar citas; gestión con su aseguradora cuando lo pida. Finalidades adicionales (puede negarse sin que afecte su atención): recordatorios de salud, promociones o información del Consultorio, y encuestas de satisfacción. Para estas hay una casilla aparte.',
+      '5. Encargados. El Consultorio usa la plataforma Novo Admin, operada por Digitia, y proveedores de alojamiento en la nube, que actúan por cuenta del Consultorio con medidas de seguridad y no pueden usar sus datos para otros fines. Sus datos no se venden.',
+      '6. Transferencias. No se transfieren sus datos a terceros, salvo a su aseguradora (si lo solicita), al SAT por la factura (si la solicita) o a una autoridad competente que lo requiera por ley.',
+      '7. Derechos ARCO. Puede acceder, rectificar, cancelar u oponerse al uso de sus datos enviando su solicitud a ' + a.correoArco + ' o en el domicilio indicado, con su nombre, medio para responderle, descripción de lo que pide e identificación. Algunos datos del expediente clínico deben conservarse por ley.',
+      '8. Revocación y limitación. Puede revocar su consentimiento o limitar el uso de sus datos por el mismo medio. No afecta el tratamiento ya hecho ni los datos que la ley obliga a conservar.',
+      '9. Conservación. Los datos se conservan mientras sea paciente y por el tiempo que exija la ley para el expediente clínico.',
+      '10. Menores de edad. Si el paciente es menor, el formulario debe llenarlo y aceptarlo su madre, padre o tutor.',
+      '11. Cookies. Este formulario no usa cookies de rastreo, analíticas, píxeles ni scripts de terceros.',
+      '12. Cambios. Cualquier cambio se publicará con nueva versión y fecha; si cambian las finalidades se le pedirá nuevamente su consentimiento.',
+      '13. Autoridad. Si cree que se vulneraron sus derechos, puede acudir a la Secretaría Anticorrupción y Buen Gobierno.',
+      'Versión ' + a.version + (a.fecha ? ' / ' + a.fecha : '') + '.'
+    ];
+    var caja = $('aviso-caja');
+    caja.textContent = '';
+    parrafos.forEach(function (texto) {
+      var p = document.createElement('p');
+      p.textContent = texto;
+      caja.appendChild(p);
+    });
+
+    $('version-aviso').textContent = 'Versión ' + a.version + (a.fecha ? ' · ' + a.fecha : '') + ' · se desplaza para leerlo completo';
+    $('txt-casilla-1').textContent = 'He leído el aviso de privacidad de ' + a.responsable +
+      ' y doy mi consentimiento expreso para el tratamiento de mis datos personales, incluidos mis datos de salud (sensibles), para las finalidades necesarias.';
+    $('txt-casilla-2').textContent = 'Autorizo que me envíen recordatorios de salud, promociones y encuestas.';
+  }
+
+  /* ── 7 · Interacción ────────────────────────────────────────── */
   var esMenor = false;
+
   function calcularEdad() {
     var v = val('nacimiento');
-    if (!v) { ver($('edad'), false); ver($('g-responsable'), false); esMenor = false; return null; }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(v)) { ver($('edad'), false); ver($('g-responsable'), false); esMenor = false; return null; }
     var partes = v.split('-');
     var n = new Date(+partes[0], (+partes[1]) - 1, +partes[2]);
     var hoy = new Date();
@@ -427,66 +570,106 @@
     ver($('g-responsable'), esMenor);
     return edad;
   }
-  $('nacimiento').addEventListener('change', function () { limpiar('nacimiento'); calcularEdad(); });
-  $('nacimiento').setAttribute('max', new Date().toISOString().slice(0, 10));
 
-  $('sin-materno').addEventListener('change', function () {
-    var m = $('materno');
-    m.disabled = this.checked;
-    if (this.checked) { m.value = ''; limpiar('materno'); }
-  });
+  function conectar() {
+    $('nacimiento').setAttribute('max', new Date().toISOString().slice(0, 10));
+    $('nacimiento').addEventListener('change', function () { limpiar('nacimiento'); calcularEdad(); });
 
-  function conmutar(nombre, destino) {
-    document.querySelectorAll('input[name="' + nombre + '"]').forEach(function (r) {
-      r.addEventListener('change', function () { ver($(destino), this.value === 'si'); });
+    $('sin-materno').addEventListener('change', function () {
+      var m = $('materno');
+      m.disabled = this.checked;
+      if (this.checked) { m.value = ''; limpiar('materno'); }
+    });
+
+    // El bloque de embarazo o lactancia solo aplica si el consultorio
+    // activó la sección y el sexo elegido es F (igual que la app).
+    document.querySelectorAll('input[name="sexo"]').forEach(function (r) {
+      r.addEventListener('change', function () {
+        ver($('e-sexo'), false);
+        var mostrar = SEC.embarazo && SEC.salud && this.value === 'F';
+        ver($('g-embarazo'), mostrar);
+        if (!mostrar) {
+          document.querySelectorAll('input[name="embarazo"]').forEach(function (x) { x.checked = false; });
+        }
+      });
+    });
+
+    ['seguro', 'factura'].forEach(function (nombre) {
+      document.querySelectorAll('input[name="' + nombre + '"]').forEach(function (r) {
+        r.addEventListener('change', function () { ver($('g-' + nombre), this.value === 'si'); });
+      });
+    });
+
+    $('atras').addEventListener('click', function () { if (paso > 1) { paso--; pintarPaso(); } });
+
+    $('siguiente').addEventListener('click', function () {
+      if (paso === 1) { if (!validarPaso1()) { return primerError(); } paso = 2; return pintarPaso(); }
+      if (paso === 2) { if (!validarPaso2()) { return primerError(); } paso = 3; return pintarPaso(); }
+      enviar();
     });
   }
-  conmutar('seguro', 'g-seguro');
-  conmutar('factura', 'g-factura');
 
-  /* ── Validación ─────────────────────────────────────────── */
-  var correoRe = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
-
-  function soloDigitos(s) { return (s || '').replace(/\D/g, ''); }
+  /* ── 8 · Validación (reglas de validarRegistro) ─────────────── */
+  var CORREO_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  var RFC_RE = /^[A-ZÑ&]{3,4}\d{6}[A-Z\d]{3}$/;
 
   function validarPaso1() {
     var ok = true;
-    ['nombres', 'paterno', 'materno', 'nacimiento', 'celular', 'correo', 'responsable', 'sexo'].forEach(limpiar);
+    ['nombres', 'paterno', 'materno', 'nacimiento', 'celular', 'correo', 'cp', 'responsable', 'sexo'].forEach(limpiar);
 
-    var nom = val('nombres');
-    if (nom.length < 2 || nom.length > 120) { error('nombres', ERR.nombreInvalido); ok = false; }
+    var nom = limpio(val('nombres'), 120);
+    if (nom.length < 2) { error('nombres', ERR.nombreInvalido); ok = false; }
 
-    if (val('paterno').length < 2) { error('paterno', ERR.apellidoInvalido); ok = false; }
+    if (!limpio(val('paterno'), 80)) { error('paterno', ERR.apellidoInvalido); ok = false; }
 
-    if (!marcado('sin-materno') && val('materno').length < 2) { error('materno', ERR.apellidoMaternoInvalido); ok = false; }
+    if (!marcado('sin-materno') && !limpio(val('materno'), 80)) { error('materno', ERR.apellidoMaternoInvalido); ok = false; }
 
     var edad = calcularEdad();
     if (edad === null) { error('nacimiento', ERR.fechaInvalida); ok = false; }
-    else if (esMenor && (val('resp-nombre').length < 2 || soloDigitos(val('resp-tel')).length !== 10)) {
-      var er = $('e-responsable'); er.textContent = ERR.responsableFaltante; ver(er, true); ok = false;
+    else if (esMenor) {
+      if (!limpio(val('resp-nombre'), 120)) {
+        var e1 = $('e-responsable'); e1.textContent = ERR.responsableNombreFaltante; ver(e1, true); ok = false;
+      } else if (soloDigitos(val('resp-tel')).length !== 10) {
+        var e2 = $('e-responsable'); e2.textContent = ERR.responsableTelefonoInvalido; ver(e2, true); ok = false;
+      }
     }
 
     if (!elegido('sexo')) { var es = $('e-sexo'); es.textContent = ERR.sexoInvalido; ver(es, true); ok = false; }
 
     if (soloDigitos(val('celular')).length !== 10) { error('celular', ERR.telefonoInvalido); ok = false; }
 
-    var cor = val('correo');
-    if (cor && !correoRe.test(cor)) { error('correo', ERR.correoInvalido); ok = false; }
+    var cor = val('correo').toLowerCase();
+    if (cor && (cor.length > 160 || !CORREO_RE.test(cor))) { error('correo', ERR.correoInvalido); ok = false; }
+
+    var cp = soloDigitos(val('cp'));
+    if (cp && cp.length !== 5) { error('cp', ERR.cpInvalido); ok = false; }
 
     return ok;
   }
 
   function validarPaso2() {
-    limpiar('correo-factura');
-    var cf = val('correo-factura');
-    if (elegido('factura') === 'si' && cf && !correoRe.test(cf)) {
-      error('correo-factura', ERR.correoInvalido);
-      return false;
+    var ok = true;
+    ['em-tel', 'rfc', 'razon', 'regimen', 'cp-fiscal', 'correo-factura'].forEach(limpiar);
+
+    if (SEC.emergencia) {
+      var tel = soloDigitos(val('em-tel'));
+      if (tel && tel.length !== 10) { error('em-tel', ERR.telefonoEmergenciaInvalido); ok = false; }
     }
-    return true;
+
+    if (SEC.factura && elegido('factura') === 'si') {
+      var rfc = val('rfc').toUpperCase().replace(/[\s-]/g, '');
+      if (!RFC_RE.test(rfc)) { error('rfc', ERR.rfcInvalido); ok = false; }
+      if (!limpio(val('razon'), 200)) { error('razon', ERR.razonSocialFaltante); ok = false; }
+      if (!/^\d{3}$/.test(val('regimen'))) { error('regimen', ERR.regimenInvalido); ok = false; }
+      if (soloDigitos(val('cp-fiscal')).length !== 5) { error('cp-fiscal', ERR.cpFiscalInvalido); ok = false; }
+      var cf = val('correo-factura').toLowerCase();
+      if (cf && !CORREO_RE.test(cf)) { error('correo-factura', ERR.correoFacturaInvalido); ok = false; }
+    }
+
+    return ok;
   }
 
-  /* ── Navegación entre pasos ─────────────────────────────── */
+  /* ── 9 · Pasos ──────────────────────────────────────────────── */
   var paso = 1;
   var textos = ['Paso 1 de 3 · Tus datos', 'Paso 2 de 3 · Tu salud y tus datos de pago', 'Paso 3 de 3 · Privacidad'];
 
@@ -502,92 +685,114 @@
     window.scrollTo(0, 0);
   }
 
-  function primerError() {
-    var e = document.querySelector('.error-campo:not(.oculto)');
-    if (e && e.scrollIntoView) { e.scrollIntoView({ block: 'center' }); }
-  }
-
-  $('atras').addEventListener('click', function () { if (paso > 1) { paso--; pintarPaso(); } });
-
-  $('siguiente').addEventListener('click', function () {
-    if (paso === 1) { if (!validarPaso1()) { return primerError(); } paso = 2; return pintarPaso(); }
-    if (paso === 2) { if (!validarPaso2()) { return primerError(); } paso = 3; return pintarPaso(); }
-    enviar();
-  });
-
-  /* ── Envío ──────────────────────────────────────────────── */
+  /* ── 10 · Payload (claves de validarRegistro) ───────────────── */
   function arma() {
     var p = {};
-    function set(clave, valor) {
-      var k = CAMPOS[clave] || clave;
-      if (valor !== '' && valor !== null && valor !== undefined) { p[k] = valor; }
-    }
-    set('nombres', val('nombres'));
-    set('apellidoPaterno', val('paterno'));
-    set('apellidoMaterno', marcado('sin-materno') ? '' : val('materno'));
-    set('sinApellidoMaterno', marcado('sin-materno'));
-    set('fechaNacimiento', val('nacimiento'));
-    set('sexo', elegido('sexo'));
-    set('celular', soloDigitos(val('celular')));
-    set('correo', val('correo'));
-    set('codigoPostal', val('cp'));
-    set('recordatorios', marcado('quiero-recordatorios') ? (val('recordatorios') || 'Sin preferencia') : 'Prefiero no recibir');
+    var sinMaterno = marcado('sin-materno');
+
+    p[PL.nombres || 'nombres'] = limpio(val('nombres'), 120);
+    p[PL.apellidoPaterno || 'apellido_paterno'] = limpio(val('paterno'), 80);
+    p[PL.apellidoMaterno || 'apellido_materno'] = sinMaterno ? null : limpio(val('materno'), 80);
+    p[PL.sinApellidoMaterno || 'sin_apellido_materno'] = sinMaterno;
+    p[PL.fechaNacimiento || 'fecha_nacimiento'] = val('nacimiento');
+    p[PL.sexo || 'sexo'] = elegido('sexo');
+    p[PL.celular || 'celular'] = soloDigitos(val('celular'));
+    p[PL.correo || 'correo'] = oNulo(val('correo').toLowerCase());
+    p[PL.codigoPostal || 'codigo_postal'] = oNulo(soloDigitos(val('cp')));
+    p[PL.recordatorio || 'recordatorio'] = oNulo(val('recordatorios'));
+    p[PL.tipoSangre || 'tipo_sangre'] = SEC.salud ? oNulo(val('sangre')) : null;
 
     if (esMenor) {
-      set('responsableNombre', val('resp-nombre'));
-      set('responsableTelefono', soloDigitos(val('resp-tel')));
+      p[GR.responsable || 'responsable'] = {
+        nombre: limpio(val('resp-nombre'), 120),
+        telefono: soloDigitos(val('resp-tel'))
+      };
     }
-    if (SEC.salud !== false) {
-      set('tipoSangre', val('sangre'));
-      set('alergias', val('alergias'));
-      set('enfermedades', val('enfermedades'));
-      set('medicamentos', val('medicamentos'));
-      set('cirugias', val('cirugias'));
-      set('antecedentesFamiliares', val('antecedentes'));
-      if (SEC.embarazoLactancia === true) { set('embarazoLactancia', elegido('embarazo')); }
-    }
-    if (SEC.emergencia !== false) {
-      set('emergenciaNombre', val('em-nombre'));
-      set('emergenciaParentesco', val('em-parentesco'));
-      set('emergenciaTelefono', soloDigitos(val('em-tel')));
-    }
-    if (SEC.seguro !== false && elegido('seguro')) {
-      set('tieneSeguro', elegido('seguro') === 'si');
-      if (elegido('seguro') === 'si') {
-        set('aseguradora', val('aseguradora'));
-        set('poliza', val('poliza'));
-        set('titularPoliza', val('titular'));
-        set('siniestroAbierto', marcado('siniestro'));
+
+    if (SEC.salud) {
+      p[GR.salud || 'salud'] = {
+        alergias: oNulo(limpio(val('alergias'))),
+        padecimientos: oNulo(limpio(val('enfermedades'))),
+        medicamentos: oNulo(limpio(val('medicamentos'))),
+        cirugias: oNulo(limpio(val('cirugias'))),
+        antecedentes_familiares: oNulo(limpio(val('antecedentes')))
+      };
+      if (SEC.embarazo && elegido('sexo') === 'F' && elegido('embarazo')) {
+        p[PL.embarazoLactancia || 'embarazo_lactancia'] = elegido('embarazo');
       }
     }
-    if (SEC.factura === true && elegido('factura')) {
-      set('necesitaFactura', elegido('factura') === 'si');
-      if (elegido('factura') === 'si') {
-        set('rfc', val('rfc').toUpperCase());
-        set('razonSocial', val('razon'));
-        set('regimenFiscal', val('regimen'));
-        set('cpFiscal', val('cp-fiscal'));
-        set('usoCfdi', val('uso-cfdi'));
-        set('correoFactura', val('correo-factura'));
-      }
+
+    if (SEC.emergencia && (limpio(val('em-nombre')) || val('em-tel'))) {
+      p[GR.emergencia || 'emergencia'] = {
+        nombre: oNulo(limpio(val('em-nombre'), 120)),
+        telefono: oNulo(soloDigitos(val('em-tel')))
+      };
     }
-    set('motivoConsulta', val('motivo'));
-    set('comoNosConociste', val('conociste'));
-    set('medicoRefiere', val('refiere'));
+
+    if (SEC.seguro) {
+      p[GR.seguro || 'seguro'] = elegido('seguro') === 'si'
+        ? {
+          tiene: true,
+          aseguradora: oNulo(limpio(val('aseguradora'), 120)),
+          poliza: oNulo(limpio(val('poliza'), 60)),
+          titular: oNulo(limpio(val('titular'), 120)),
+          siniestro_abierto: marcado('siniestro')
+        }
+        : { tiene: false };
+    }
+
+    if (SEC.factura && elegido('factura') === 'si') {
+      p[GR.datosFiscales || 'datos_fiscales'] = {
+        rfc: val('rfc').toUpperCase().replace(/[\s-]/g, ''),
+        razon_social: limpio(val('razon'), 200),
+        regimen_fiscal: val('regimen'),
+        codigo_postal: soloDigitos(val('cp-fiscal')),
+        uso_cfdi: oNulo(val('uso-cfdi').toUpperCase()),
+        correo: oNulo(val('correo-factura').toLowerCase())
+      };
+    }
+
+    if (SEC.extras) {
+      p[GR.extras || 'extras'] = {
+        motivo: oNulo(limpio(val('motivo'))),
+        como_nos_conocio: oNulo(limpio(val('conociste'), 120)),
+        medico_refiere: oNulo(limpio(val('refiere'), 120))
+      };
+    }
+
     return p;
   }
 
+  /* ── 11 · Envío ─────────────────────────────────────────────── */
   function fallaEnvio(mensaje) {
-    $('error-envio-txt').textContent = mensaje;
+    $('error-envio-txt').textContent = mensaje || ERR.envioFallido;
     ver($('error-envio'), true);
     $('siguiente').disabled = false;
     $('siguiente').textContent = 'Enviar mi registro';
+    primerError();
+  }
+
+  // Traduce el error de la base al mensaje del paciente. Mismos
+  // códigos y mismos textos que mensajeErrorRegistro().
+  function mensajeDeError(d) {
+    var msg = (d && typeof d.message === 'string') ? d.message : '';
+    var code = (d && typeof d.code === 'string') ? d.code : '';
+    var claves = ['limite_excedido', 'token_invalido', 'aviso_no_configurado', 'sin_consentimiento',
+      'nombre_invalido', 'celular_invalido', 'correo_invalido', 'sexo_invalido',
+      'fecha_invalida', 'payload_invalido'];
+    for (var i = 0; i < claves.length; i++) {
+      if (msg.indexOf(claves[i]) !== -1 && EDB[claves[i]]) { return EDB[claves[i]]; }
+    }
+    if (code === 'PGRST202' || code === '42883') { return ERR.noActivo; }
+    return ERR.envioFallido;
   }
 
   function listo() {
     var ahora = new Date();
-    $('sello').textContent = 'Consentimiento registrado el ' + ahora.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) +
-      ', ' + ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) + ' · aviso versión ' + ((C.aviso && C.aviso.version) || '—') + '.';
+    $('sello').textContent = 'Consentimiento registrado el ' +
+      ahora.toLocaleDateString('es-MX', { day: 'numeric', month: 'long', year: 'numeric' }) + ', ' +
+      ahora.toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit' }) +
+      ' · aviso versión ' + (AVISO ? AVISO.version : '—') + '.';
     ver($('formulario'), false);
     ver($('pantalla-ok'), true);
     window.scrollTo(0, 0);
@@ -603,38 +808,36 @@
       ver(ec, true);
       return primerError();
     }
-
-    // Campo trampa: si viene lleno, es un bot. No se envía nada.
-    // Nunca se muestra la pantalla de éxito sin respuesta del servidor.
-    if ($('apellido-extra').value !== '') { return fallaEnvio(ERR.envioFallido); }
-
-    if (!C.flags || !C.flags.formularioActivo || !C.supabase || !C.supabase.url || !C.supabase.anonKey || !C.rpc || !C.rpc.registrarPrerregistro) {
-      return fallaEnvio(ERR.noActivo);
+    if (!AVISO) { return fallaEnvio(ERR.sinAviso); }
+    // Última revisión antes de salir: si algo quedó mal, regresa al paso.
+    var ok1 = validarPaso1();
+    var ok2 = validarPaso2();
+    if (!ok1 || !ok2) {
+      paso = ok1 ? 2 : 1;
+      pintarPaso();
+      return primerError();
     }
 
     $('siguiente').disabled = true;
     $('siguiente').textContent = 'Enviando…';
 
     var cuerpo = {};
-    cuerpo[CAMPOS.token || 'p_token'] = token;
-    cuerpo[CAMPOS.payload || 'p_payload'] = arma();
-    cuerpo[CAMPOS.consentimiento || 'p_consentimiento'] = true;
-    cuerpo[CAMPOS.avisoVersion || 'p_aviso_version'] = (C.aviso && C.aviso.version) || null;
+    cuerpo[A.token || 'p_token'] = token;
+    cuerpo[A.payload || 'p_payload'] = arma();
+    cuerpo[A.consentimiento || 'p_consentimiento'] = true;
+    // La versión que acepta el paciente es la que publicó el consultorio.
+    cuerpo[A.avisoVersion || 'p_aviso_version'] = AVISO.version;
+    // Campo trampa: la función lo revisa y descarta el envío en silencio.
+    cuerpo[A.trampa || 'p_trampa'] = $('apellido-extra').value.trim() || null;
+    cuerpo[A.aceptaPromociones || 'p_acepta_promociones'] = marcado('acepta-promociones');
 
-    fetch(C.supabase.url + '/rest/v1/rpc/' + C.rpc.registrarPrerregistro, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'apikey': C.supabase.anonKey },
-      body: JSON.stringify(cuerpo)
-    }).then(function (r) {
-      // Solo se da por bueno un exito explicito del servidor (2xx).
-      // Cualquier otra cosa -- red, funcion inexistente, 4xx o 5xx --
-      // cae en el mismo mensaje claro.
+    pedir(RPC.enviarPrerregistro, cuerpo).then(function (r) {
+      // Solo se da por bueno un éxito explícito del servidor (2xx).
       if (r.ok) { return listo(); }
-      fallaEnvio(ERR.envioFallido);
+      return r.json().then(function (d) { fallaEnvio(mensajeDeError(d)); },
+        function () { fallaEnvio(ERR.envioFallido); });
     })['catch'](function () { fallaEnvio(ERR.envioFallido); });
   }
-
-  pintarPaso();
 })();
 </script>
 </body>
