@@ -11,6 +11,16 @@
 <!-- Esta página no carga nada de terceros: ni fuentes, ni analíticas,
      ni pixeles, ni cookies. Las tipografías viven en este repo. -->
 <link rel="stylesheet" href="../assets/novo.css">
+<script>
+  /* ─────────────── INTERRUPTOR PRINCIPAL ───────────────
+     false = la pagina solo avisa que el registro aun no esta
+             disponible y NO envia nada a ningun servidor.
+     true  = el formulario funciona normalmente.
+     Cambiar a true unicamente cuando las migraciones esten
+     aplicadas en produccion y el aviso de privacidad este
+     aprobado. */
+  const FORMULARIO_ACTIVO = false;
+</script>
 <style>
   body { background: var(--bg); }
   .hoja { max-width: 520px; margin: 0 auto; min-height: 100vh; display: flex; flex-direction: column; }
@@ -344,6 +354,12 @@
     ver($('pantalla-aviso'), true);
   }
 
+  /* ── Interruptor: si esta apagado, no se envia nada ─────── */
+  if (typeof FORMULARIO_ACTIVO === 'undefined' || FORMULARIO_ACTIVO !== true) {
+    salir('Este registro aún no está disponible', 'Avisa en recepción.');
+    return;
+  }
+
   /* ── Token ──────────────────────────────────────────────── */
   var token = '';
   try { token = (new URLSearchParams(location.search).get('t') || '').trim(); } catch (e) { token = ''; }
@@ -366,7 +382,7 @@
 
   /* ── Aviso de privacidad ────────────────────────────────── */
   var aviso = C.aviso || {};
-  if (!aviso.aprobado) { ver($('sello-borrador'), true); }
+  if (!(FORMULARIO_ACTIVO === true && aviso.aprobado === true)) { ver($('sello-borrador'), true); }
   $('version-aviso').textContent = 'Versión ' + (aviso.version || '—') + ' · se desplaza para leerlo completo';
 
   /* ── Identidad del consultorio (solo si el dueño la activó) ─ */
@@ -588,11 +604,11 @@
       return primerError();
     }
 
-    // Campo trampa: si viene lleno, es un bot. No se envía nada y se
-    // muestra la misma pantalla de éxito para no darle pistas.
-    if ($('apellido-extra').value !== '') { return listo(); }
+    // Campo trampa: si viene lleno, es un bot. No se envía nada.
+    // Nunca se muestra la pantalla de éxito sin respuesta del servidor.
+    if ($('apellido-extra').value !== '') { return fallaEnvio(ERR.envioFallido); }
 
-    if (!C.flags || !C.flags.formularioActivo || !C.supabase || !C.supabase.url || !C.supabase.anonKey) {
+    if (!C.flags || !C.flags.formularioActivo || !C.supabase || !C.supabase.url || !C.supabase.anonKey || !C.rpc || !C.rpc.registrarPrerregistro) {
       return fallaEnvio(ERR.noActivo);
     }
 
@@ -610,15 +626,12 @@
       headers: { 'Content-Type': 'application/json', 'apikey': C.supabase.anonKey },
       body: JSON.stringify(cuerpo)
     }).then(function (r) {
+      // Solo se da por bueno un exito explicito del servidor (2xx).
+      // Cualquier otra cosa -- red, funcion inexistente, 4xx o 5xx --
+      // cae en el mismo mensaje claro.
       if (r.ok) { return listo(); }
-      if (r.status === 429) { return fallaEnvio(ERR.limiteExcedido); }
-      return r.text().then(function (t) {
-        var s = (t || '').toLowerCase();
-        if (r.status === 404 || s.indexOf('token') >= 0) { return fallaEnvio(ERR.tokenInvalido); }
-        if (s.indexOf('limit') >= 0 || s.indexOf('rate') >= 0) { return fallaEnvio(ERR.limiteExcedido); }
-        fallaEnvio(ERR.sinConexion);
-      });
-    })['catch'](function () { fallaEnvio(ERR.sinConexion); });
+      fallaEnvio(ERR.envioFallido);
+    })['catch'](function () { fallaEnvio(ERR.envioFallido); });
   }
 
   pintarPaso();

@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Entrar — Novo Admin</title>
-<meta name="robots" content="noindex">
+<meta name="robots" content="noindex, nofollow">
 <meta name="theme-color" content="#FAF9F7">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1024 1024'%3E%3Crect width='1024' height='1024' rx='200' fill='%23fff'/%3E%3Cg fill='none' stroke='%230a0a0a' stroke-width='87'%3E%3Cpath d='M216 450A186.500 186.500 0 1 1 345 450'/%3E%3Ccircle cx='742' cy='277' r='186.500'/%3E%3Cpath d='M361.800 572.400A186.500 186.500 0 1 1 189.600 576.900'/%3E%3Ccircle cx='742' cy='740' r='186.500'/%3E%3C/g%3E%3C/svg%3E">
 <link rel="stylesheet" href="../assets/novo.css">
@@ -84,7 +84,12 @@
         <span id="error-txt"></span>
       </div>
 
-      <button class="btn btn-primario btn-ancho" id="enviar" type="submit">Entrar</button>
+      <button class="btn btn-ancho off" id="enviar" type="submit" disabled>Próximamente</button>
+
+      <div class="nota nota-arena" style="margin-top:16px">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>
+        <span>El panel todavía no está disponible. Cuando lo esté, entrarás aquí con la misma cuenta que usas en la app.</span>
+      </div>
     </form>
 
     <div class="nota nota-terra" style="margin-top:18px;position:relative">
@@ -113,6 +118,10 @@
   forma.addEventListener('submit', function (ev) {
     ev.preventDefault();
     caja.classList.add('oculto');
+
+    // El panel aun no existe: el boton esta desactivado y no se envia
+    // nada a ningun servidor. Quitar este bloque para reactivarlo.
+    if (boton.disabled) { return; }
 
     var correo = document.getElementById('correo').value.trim();
     var clave = document.getElementById('clave').value;
