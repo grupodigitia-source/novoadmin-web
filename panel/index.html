@@ -24,6 +24,8 @@
   .f2 ul { margin: 14px 0 0; padding: 0; list-style: none; display: grid; gap: 10px; }
   .f2 li { display: flex; gap: 11px; align-items: flex-start; font-size: 14.5px; line-height: 1.5; color: var(--ink-2); }
   .f2 li svg { width: 18px; height: 18px; flex-shrink: 0; margin-top: 2px; color: var(--subtle); }
+  /* QR atenuado mientras el consultorio no tenga aviso de privacidad */
+  #qr.atenuado { opacity: 0.3; filter: grayscale(1); }
 </style>
 </head>
 <body>
@@ -63,6 +65,11 @@
     <select class="campo" id="consultorio"></select>
   </div>
 
+  <div id="aviso-privacidad" class="nota nota-arena oculto" role="alert" style="margin-bottom:20px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3L12 4zM12 10v4M12 17.4v.2"/></svg>
+    <span><strong>Falta configurar el aviso de privacidad de tu consultorio en la app.</strong> Mientras no lo hagas, este QR no recibirá registros.</span>
+  </div>
+
   <div class="fila">
     <div class="pendientes tarjeta">
       <span class="marca-agua" aria-hidden="true"><svg viewBox="0 0 1024 1024" style="width:100%;height:100%;color:var(--ink)"><use href="#novo"/></svg></span>
@@ -81,6 +88,7 @@
         <a class="btn btn-fantasma" id="abrir" href="../registro-paciente/" style="min-height:42px;font-size:14px">Ver el formulario</a>
       </div>
       <p class="ayuda">El token va dentro de la liga. Nunca se muestra el identificador de tu consultorio.</p>
+      <p class="ayuda oculto" id="linea-aviso"></p>
     </div>
   </div>
 
@@ -136,6 +144,12 @@
        mis_consultorios()                         → [{ id, nombre, tipo }]
        prerregistros_pendientes_conteo(p_business_id) → integer
        token_registro_qr(p_business_id, p_rotar)  → text (token)
+       marca_registro_qr(p_token)                 → [{ nombre, logo_url,
+                                                       secciones, aviso }]
+     marca_registro_qr es pública: se llama con la anon key y SIN
+     Authorization, igual que la llama el formulario del paciente.
+     Sirve para avisarle al dueño si todavía no configuró su aviso de
+     privacidad; sin aviso, enviar_prerregistro_qr rechaza los envíos.
      El token del QR nunca se escribe en la consola ni en ningún log.
      ─────────────────────────────────────────────── */
   var PANEL_ACTIVO = false;
@@ -143,6 +157,7 @@
   var RPC_CONSULTORIOS = 'mis_consultorios';
   var RPC_CONTEO = 'prerregistros_pendientes_conteo';
   var RPC_TOKEN = (window.NOVO_CONFIG && window.NOVO_CONFIG.rpc && window.NOVO_CONFIG.rpc.tokenDelDueno) || 'token_registro_qr';
+  var RPC_MARCA = (window.NOVO_CONFIG && window.NOVO_CONFIG.rpc && window.NOVO_CONFIG.rpc.marca) || 'marca_registro_qr';
   var LIGA_BASE = 'https://novoadmin.com/registro-paciente/?t=';
 
   var MSJ_SIN_PERMISO = 'No tienes permiso sobre este consultorio.';
@@ -192,6 +207,52 @@
     })['catch'](function () { return { ok: false, status: 0, data: null }; });
   }
 
+  /* Función pública: anon key, SIN Authorization. Nunca lanza; si algo
+     falla devuelve null y el panel se queda como está. */
+  function rpcPublica(nombre, cuerpo) {
+    return fetch(C.supabase.url + '/rest/v1/rpc/' + nombre, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'apikey': C.supabase.anonKey },
+      body: JSON.stringify(cuerpo)
+    }).then(function (r) {
+      if (!r.ok) { return null; }
+      return r.json()['catch'](function () { return null; });
+    })['catch'](function () { return null; });
+  }
+
+  function limpiarAviso() {
+    $('aviso-privacidad').classList.add('oculto');
+    $('linea-aviso').classList.add('oculto');
+    $('linea-aviso').textContent = '';
+    $('qr').classList.remove('atenuado');
+    $('copiar').disabled = false;
+  }
+
+  function sinAvisoConfigurado() {
+    $('aviso-privacidad').classList.remove('oculto');
+    $('copiar').disabled = true;
+    $('descargar').disabled = true;
+    $('qr').classList.add('atenuado');
+  }
+
+  /* Revisa con marca_registro_qr si el consultorio ya publicó su aviso.
+     Si la llamada falla o no devuelve fila, el panel se muestra normal:
+     esto informa, no bloquea. */
+  function revisarAviso(token) {
+    return rpcPublica(RPC_MARCA, { p_token: token }).then(function (d) {
+      var fila = Array.isArray(d) ? d[0] : d;
+      if (!fila || typeof fila !== 'object') { return; }
+      var aviso = fila.aviso;
+      if (aviso && typeof aviso === 'object' && !Array.isArray(aviso) && aviso.version) {
+        $('linea-aviso').textContent = 'Aviso de privacidad: versión ' + aviso.version;
+        $('linea-aviso').classList.remove('oculto');
+        return;
+      }
+      // aviso null, o incompleto: la base no aceptará registros.
+      sinAvisoConfigurado();
+    });
+  }
+
   function esSinPermiso(res) {
     var d = res.data || {};
     return res.status === 403 || d.code === '42501' || /sin_permiso/.test(String(d.message || ''));
@@ -237,9 +298,13 @@
 
   function cargarToken(rotar) {
     $('rotar').disabled = true;
+    limpiarAviso();
     return rpc(RPC_TOKEN, { p_business_id: actual, p_rotar: rotar }).then(function (res) {
       if (res.status === 401) { return; }
-      if (res.ok && typeof res.data === 'string' && res.data) { return mostrarToken(res.data); }
+      if (res.ok && typeof res.data === 'string' && res.data) {
+        mostrarToken(res.data);
+        return revisarAviso(res.data);
+      }
       error(esSinPermiso(res) ? MSJ_SIN_PERMISO : MSJ_GENERAL);
       $('rotar').disabled = !liga;
     });
@@ -261,6 +326,7 @@
     $('liga').textContent = '—';
     $('qr').textContent = '';
     $('descargar').disabled = true;
+    limpiarAviso();
     cargarConteo();
     cargarToken(false);
   }
