@@ -86,7 +86,7 @@
 
       <button class="btn btn-ancho off" id="enviar" type="submit" disabled>Próximamente</button>
 
-      <div class="nota nota-arena" style="margin-top:16px">
+      <div class="nota nota-arena" id="nota-pronto" style="margin-top:16px">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7.5V12l3 2"/></svg>
         <span>El panel todavía no está disponible. Cuando lo esté, entrarás aquí con la misma cuenta que usas en la app.</span>
       </div>
@@ -102,11 +102,30 @@
 <script src="../novo-config.js"></script>
 <script>
 (function () {
+  /* ─────────────── INICIO DE SESIÓN ───────────────
+     ENTRAR_ACTIVO = false: el botón sigue en "Próximamente" y la página
+     no hace NINGUNA petición de red. Poner en true solo cuando las
+     migraciones (20261123, 20261128) estén aplicadas en producción.
+     La sesión vive solo en sessionStorage (nunca localStorage ni cookies).
+     ─────────────────────────────────────────────── */
+  var ENTRAR_ACTIVO = false;
+
   var C = window.NOVO_CONFIG || {};
   var forma = document.getElementById('forma');
   var caja = document.getElementById('error');
   var txt = document.getElementById('error-txt');
   var boton = document.getElementById('enviar');
+
+  var MSJ_CREDENCIALES = 'Correo o contraseña incorrectos.';
+  var MSJ_GENERAL = 'No pudimos iniciar sesión. Inténtalo de nuevo.';
+
+  if (ENTRAR_ACTIVO) {
+    boton.disabled = false;
+    boton.classList.remove('off');
+    boton.textContent = 'Entrar';
+    var pronto = document.getElementById('nota-pronto');
+    if (pronto) { pronto.classList.add('oculto'); }
+  }
 
   function falla(mensaje) {
     txt.textContent = mensaje;
@@ -118,22 +137,15 @@
   forma.addEventListener('submit', function (ev) {
     ev.preventDefault();
     caja.classList.add('oculto');
-
-    // El panel aun no existe: el boton esta desactivado y no se envia
-    // nada a ningun servidor. Quitar este bloque para reactivarlo.
-    if (boton.disabled) { return; }
+    if (!ENTRAR_ACTIVO || boton.disabled) { return; }
 
     var correo = document.getElementById('correo').value.trim();
     var clave = document.getElementById('clave').value;
-
     if (!correo || correo.indexOf('@') < 1 || correo.indexOf('.', correo.indexOf('@')) < 0) {
       return falla('Revisa tu correo. Debe verse como nombre@dominio.com.');
     }
     if (!clave) { return falla('Escribe tu contraseña.'); }
-
-    if (!C.supabase || !C.supabase.url || !C.supabase.anonKey) {
-      return falla('El inicio de sesión todavía no está conectado. Falta configurar el proyecto en novo-config.js.');
-    }
+    if (!C.supabase || !C.supabase.url || !C.supabase.anonKey) { return falla(MSJ_GENERAL); }
 
     boton.disabled = true;
     boton.textContent = 'Entrando…';
@@ -143,30 +155,27 @@
       headers: { 'Content-Type': 'application/json', 'apikey': C.supabase.anonKey },
       body: JSON.stringify({ email: correo, password: clave })
     }).then(function (r) {
-      return r.json().then(function (d) { return { ok: r.ok, d: d }; });
+      return r.json()['catch'](function () { return {}; }).then(function (d) { return { status: r.status, ok: r.ok, d: d || {} }; });
     }).then(function (res) {
       if (!res.ok || !res.d.access_token) {
-        var d = res.d || {};
-        var c = ((d.error_code || d.error || d.msg || d.error_description || '') + '').toLowerCase();
-        if (c.indexOf('email_not_confirmed') >= 0) {
-          return falla('Tu cuenta existe, pero falta confirmar tu correo. Busca el correo de confirmación de Novo Admin y vuelve a intentar.');
+        var c = ((res.d.error_code || res.d.error || '') + '').toLowerCase();
+        // GoTrue: 400 invalid_credentials (versiones nuevas) o invalid_grant (viejas).
+        if (res.status === 400 && (c === 'invalid_credentials' || c === 'invalid_grant')) {
+          return falla(MSJ_CREDENCIALES);
         }
-        if (res.status === 429 || c.indexOf('too many') >= 0 || c.indexOf('rate') >= 0) {
-          return falla('Demasiados intentos. Espera unos minutos e inténtalo otra vez.');
-        }
-        return falla('No encontramos una cuenta con ese correo y contraseña. Entra con la misma cuenta que usas en la app Novo Admin; desde aquí no se crean cuentas nuevas.');
+        return falla(MSJ_GENERAL);
       }
-      // Sesión del dueño, solo mientras la pestaña esté abierta.
-      // Aquí no se guarda ningún dato de pacientes.
       try {
         sessionStorage.setItem('novo_sesion', JSON.stringify({
           token: res.d.access_token,
           expira: Date.now() + (res.d.expires_in || 3600) * 1000
         }));
-      } catch (e) { /* sin almacenamiento: el panel lo pedirá de nuevo */ }
+      } catch (e) {
+        return falla(MSJ_GENERAL);
+      }
       location.href = '../panel/';
     })['catch'](function () {
-      falla('No pudimos conectarnos. Revisa tu conexión e inténtalo otra vez.');
+      falla(MSJ_GENERAL);
     });
   });
 })();
