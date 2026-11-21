@@ -50,7 +50,7 @@
 
   <div id="aviso-sesion" class="nota nota-arena oculto" role="alert" style="margin-bottom:20px">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3L12 4zM12 10v4M12 17.4v.2"/></svg>
-    <span>Tu sesión no está activa. <a href="../entrar/">Vuelve a entrar</a> para ver los datos de tu consultorio.</span>
+    <span>Tu sesión no está activa. Vuelve a iniciar sesión para ver los datos de tu consultorio.</span>
   </div>
 
   <div class="fila">
@@ -98,7 +98,7 @@
 
   document.getElementById('salir').addEventListener('click', function () {
     try { sessionStorage.removeItem('novo_sesion'); } catch (e) {}
-    location.href = '../entrar/';
+    location.href = '../';
   });
 
   function sinSesion() { document.getElementById('aviso-sesion').classList.remove('oculto'); }

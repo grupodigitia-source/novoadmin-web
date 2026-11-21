@@ -134,7 +134,7 @@ window.NOVO_CONFIG = {
     limiteExcedido: 'Demasiados envíos desde este código. Espera unos minutos e inténtalo otra vez.',
     consentimientoFaltante: 'Marca la casilla del aviso de privacidad para enviar.',
     responsableFaltante: 'Como eres menor de 18, necesitamos el nombre y teléfono de tu persona responsable.',
-    sinConexion: 'No pudimos enviar tus datos. Revisa tu conexión e inténtalo otra vez.',
+    envioFallido: 'No pudimos enviar tus datos. Avisa en recepción.',
     noActivo: 'El registro en línea todavía no está activo en este consultorio. Pasa a recepción y con gusto te registran.'
   }
 };
