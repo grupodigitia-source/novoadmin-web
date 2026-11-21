@@ -43,6 +43,11 @@
   <h1 style="font-size:26px;font-weight:700;margin-bottom:6px">Tu código QR</h1>
   <p style="margin:0 0 26px;font-size:15px;color:var(--muted)">Comparte la liga o imprime el cartel para que tus pacientes se registren antes de llegar.</p>
 
+  <div id="aviso-cuenta" class="nota nota-arena oculto" role="alert" style="margin-bottom:20px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.4"/></svg>
+    <span>Tu cuenta entró bien, pero no tiene ningún consultorio asignado como dueño. Revísalo en la app, en Perfil, o escríbenos a <a href="mailto:soporte@novoadmin.com">soporte@novoadmin.com</a>.</span>
+  </div>
+
   <div id="aviso-sesion" class="nota nota-arena oculto" role="alert" style="margin-bottom:20px">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3L12 4zM12 10v4M12 17.4v.2"/></svg>
     <span>Tu sesión no está activa. <a href="../entrar/">Vuelve a entrar</a> para ver los datos de tu consultorio.</span>
@@ -97,6 +102,7 @@
   });
 
   function sinSesion() { document.getElementById('aviso-sesion').classList.remove('oculto'); }
+  function sinConsultorio() { document.getElementById('aviso-cuenta').classList.remove('oculto'); }
 
   if (!sesion || !sesion.token || (sesion.expira && Date.now() > sesion.expira)) { return sinSesion(); }
   if (!C.supabase || !C.supabase.url || !C.supabase.anonKey) { return sinSesion(); }
@@ -112,7 +118,7 @@
   }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
     if (!d) { return sinSesion(); }
     var dato = Array.isArray(d) ? d[0] : d;
-    if (!dato) { return sinSesion(); }
+    if (!dato || !dato.token) { return sinConsultorio(); }
 
     if (dato.token) {
       var liga = location.origin + location.pathname.replace(/panel\/?$/, '') + 'registro-paciente/?t=' + encodeURIComponent(dato.token);

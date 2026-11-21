@@ -126,6 +126,26 @@ input[type="checkbox"], input[type="radio"] { accent-color: var(--terra-deep); w
 
 .oculto { display: none !important; }
 
+/* ── Fondo: escanear un QR y guardarlo en la base de datos ──
+   Un ciclo de 6 s cuenta la historia completa: el haz recorre el
+   código, los módulos se encienden, el dato viaja y la base se llena. */
+#fondo { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; color: var(--terra); }
+#fondo .qr { position: absolute; top: -7vmax; right: -9vmax; width: 48vmax; height: 48vmax; opacity: 0.12; }
+#fondo .qr rect, #fondo .qr circle { fill: currentColor; }
+#fondo .qr .marco { fill: none; stroke: currentColor; stroke-width: 6; }
+#fondo .qr .haz { opacity: 0; animation: barrido 6s cubic-bezier(.45,0,.55,1) infinite; }
+#fondo .qr .lee { animation: leer 6s ease-in-out infinite; }
+#fondo .base { position: absolute; left: -5vmax; bottom: -7vmax; width: 34vmax; height: 42vmax; opacity: 0.1; }
+#fondo .base .cil { fill: none; stroke: currentColor; stroke-width: 3; }
+#fondo .base .reg { fill: currentColor; transform-origin: left center; animation: llenar 6s ease-in-out infinite; }
+#fondo .dato { position: absolute; top: 15vh; right: 17vw; width: 11px; height: 11px; border-radius: 3px; background: currentColor; opacity: 0; animation: viajar 6s linear infinite; }
+#fondo.suave .base, #fondo.suave .dato { display: none; }
+#fondo.suave .qr { opacity: 0.055; }
+@keyframes barrido { 0% { transform: translateY(0); opacity: 0 } 6% { opacity: 0.85 } 44% { opacity: 0.85 } 52%, 100% { transform: translateY(104px); opacity: 0 } }
+@keyframes leer { 0%, 42% { opacity: 0.3 } 50%, 100% { opacity: 1 } }
+@keyframes llenar { 0%, 56% { transform: scaleX(0) } 82%, 100% { transform: scaleX(1) } }
+@keyframes viajar { 0%, 50% { transform: translate(0,0); opacity: 0 } 57% { opacity: 0.42 } 90% { opacity: 0.42 } 100% { transform: translate(-63vw, 66vh); opacity: 0 } }
+
 /* Campo trampa: fuera de la vista, nunca enfocable */
 .trampa { position: absolute !important; left: -9999px !important; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
 
