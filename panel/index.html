@@ -45,12 +45,22 @@
 
   <div id="aviso-cuenta" class="nota nota-arena oculto" role="alert" style="margin-bottom:20px">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.4"/></svg>
-    <span>Tu cuenta entró bien, pero no tiene ningún consultorio asignado como dueño. Revísalo en la app, en Perfil, o escríbenos a <a href="mailto:soporte@novoadmin.com">soporte@novoadmin.com</a>.</span>
+    <span>Tu cuenta no tiene un consultorio como dueño. Si eres doctor o recepción, usa la app.</span>
   </div>
 
   <div id="aviso-sesion" class="nota nota-arena oculto" role="alert" style="margin-bottom:20px">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3L12 4zM12 10v4M12 17.4v.2"/></svg>
     <span>Tu sesión no está activa. Vuelve a iniciar sesión para ver los datos de tu consultorio.</span>
+  </div>
+
+  <div id="error-panel" class="nota nota-roja oculto" role="alert" style="margin-bottom:20px">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3L12 4zM12 10v4M12 17.4v.2"/></svg>
+    <span id="error-panel-txt"></span>
+  </div>
+
+  <div id="selector" class="grupo oculto" style="max-width:420px;margin-bottom:20px">
+    <label class="etiqueta" for="consultorio">Consultorio</label>
+    <select class="campo" id="consultorio"></select>
   </div>
 
   <div class="fila">
@@ -74,6 +84,31 @@
     </div>
   </div>
 
+  <div class="f2 tarjeta" id="tarjeta-qr">
+    <div style="display:flex;flex-wrap:wrap;gap:24px;align-items:center">
+      <div id="qr" style="width:220px;height:220px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--border);border-radius:14px;background:#fff">
+        <span style="font-size:13px;color:var(--muted)">—</span>
+      </div>
+      <div style="flex:1 1 260px;min-width:0">
+        <h2 style="font-size:19px;font-weight:700;margin:0 0 8px">QR del consultorio</h2>
+        <p style="margin:0 0 14px;font-size:14.5px;line-height:1.5;color:var(--ink-2)">Se genera aquí mismo, en tu navegador: la liga no se manda a ningún otro servicio.</p>
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <button class="btn btn-fantasma" id="descargar" type="button" style="min-height:42px;font-size:14px" disabled>Descargar QR (PNG)</button>
+          <button class="btn btn-fantasma" id="rotar" type="button" style="min-height:42px;font-size:14px" disabled>Generar un QR nuevo</button>
+        </div>
+        <div id="confirmar-rotar" class="nota nota-arena oculto" role="alertdialog" style="margin-top:14px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4l9 16H3L12 4zM12 10v4M12 17.4v.2"/></svg>
+          <span>El QR anterior dejará de funcionar. Si ya lo imprimiste, tendrás que imprimir el nuevo.
+            <span style="display:flex;gap:10px;margin-top:10px;flex-wrap:wrap">
+              <button class="btn" id="rotar-si" type="button" style="min-height:40px;font-size:14px">Sí, generar uno nuevo</button>
+              <button class="btn btn-fantasma" id="rotar-no" type="button" style="min-height:40px;font-size:14px">Cancelar</button>
+            </span>
+          </span>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <div class="f2 tarjeta">
     <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
       <h2 style="font-size:19px;font-weight:700;margin:0">Lo que sigue</h2>
@@ -90,68 +125,193 @@
 </main>
 
 <script src="../novo-config.js"></script>
+<script src="../assets/vendor/qrcode-generator.js"></script>
 <script>
 (function () {
+  /* ─────────────── PANEL DEL DUEÑO ───────────────
+     PANEL_ACTIVO = false: el panel NO hace ninguna petición de red.
+     Poner en true solo cuando las migraciones 20261123 (#28) y
+     20261128 (#54) estén aplicadas en producción.
+     Funciones (repo novo-admin, PR #54 y #28):
+       mis_consultorios()                         → [{ id, nombre, tipo }]
+       prerregistros_pendientes_conteo(p_business_id) → integer
+       token_registro_qr(p_business_id, p_rotar)  → text (token)
+     El token del QR nunca se escribe en la consola ni en ningún log.
+     ─────────────────────────────────────────────── */
+  var PANEL_ACTIVO = false;
+
+  var RPC_CONSULTORIOS = 'mis_consultorios';
+  var RPC_CONTEO = 'prerregistros_pendientes_conteo';
+  var RPC_TOKEN = (window.NOVO_CONFIG && window.NOVO_CONFIG.rpc && window.NOVO_CONFIG.rpc.tokenDelDueno) || 'token_registro_qr';
+  var LIGA_BASE = 'https://novoadmin.com/registro-paciente/?t=';
+
+  var MSJ_SIN_PERMISO = 'No tienes permiso sobre este consultorio.';
+  var MSJ_GENERAL = 'Algo salió mal. Inténtalo de nuevo.';
+
   var C = window.NOVO_CONFIG || {};
+  var $ = function (id) { return document.getElementById(id); };
   var sesion = null;
   try { sesion = JSON.parse(sessionStorage.getItem('novo_sesion') || 'null'); } catch (e) { sesion = null; }
 
-  document.getElementById('salir').addEventListener('click', function () {
+  $('salir').addEventListener('click', function () {
     try { sessionStorage.removeItem('novo_sesion'); } catch (e) {}
     location.href = '../';
   });
 
-  function sinSesion() { document.getElementById('aviso-sesion').classList.remove('oculto'); }
-  function sinConsultorio() { document.getElementById('aviso-cuenta').classList.remove('oculto'); }
+  function sinSesion() { $('aviso-sesion').classList.remove('oculto'); }
+  function sinConsultorio() { $('aviso-cuenta').classList.remove('oculto'); }
+  function error(msj) { $('error-panel-txt').textContent = msj; $('error-panel').classList.remove('oculto'); }
+  function limpiarError() { $('error-panel').classList.add('oculto'); }
+  function aEntrar() {
+    try { sessionStorage.removeItem('novo_sesion'); } catch (e) {}
+    location.href = '../entrar/';
+  }
 
-  /* ─────────────── PANEL APAGADO ───────────────
-     Este panel sigue sin hacer ninguna llamada. La función real de
-     la base es token_registro_qr(p_business_id uuid, p_rotar boolean
-     default false) y devuelve SOLO el token (text), no un objeto.
-     Faltan dos piezas, y las dos son decisión de Patricio:
-       1. De dónde saca el sitio el business_id del dueño. La función
-          lo exige y marca_registro_qr no lo devuelve nunca (a
-          propósito: el QR no debe cargar el id del negocio).
-       2. De dónde sale el número de prerregistros pendientes. Esa
-          cuenta se lee de prerregistros_paciente (RLS es_equipo_agenda),
-          no de token_registro_qr.
-     Mientras eso no se defina, PANEL_ACTIVO se queda en false.
-     ────────────────────────────────────────────── */
-  var PANEL_ACTIVO = false;
+  if (!PANEL_ACTIVO) {
+    if (!sesion || !sesion.token) { return sinSesion(); }
+    return sinConsultorio();
+  }
 
-  if (!sesion || !sesion.token || (sesion.expira && Date.now() > sesion.expira)) { return sinSesion(); }
-  if (!C.supabase || !C.supabase.url || !C.supabase.anonKey) { return sinSesion(); }
-  if (!PANEL_ACTIVO || !C.rpc || !C.rpc.tokenDelDueno) { return sinConsultorio(); }
+  if (!sesion || !sesion.token || (sesion.expira && Date.now() > sesion.expira)) { return aEntrar(); }
+  if (!C.supabase || !C.supabase.url || !C.supabase.anonKey) { return error(MSJ_GENERAL); }
 
-  fetch(C.supabase.url + '/rest/v1/rpc/' + C.rpc.tokenDelDueno, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'apikey': C.supabase.anonKey,
-      'Authorization': 'Bearer ' + sesion.token
-    },
-    body: '{}'
-  }).then(function (r) { return r.ok ? r.json() : null; }).then(function (d) {
-    if (!d) { return sinSesion(); }
-    var dato = Array.isArray(d) ? d[0] : d;
-    if (!dato || !dato.token) { return sinConsultorio(); }
+  /* Llama una función de la base. Resuelve { ok, status, data }; nunca lanza.
+     401 → sesión vencida: se borra y se vuelve a /entrar/. */
+  function rpc(nombre, cuerpo) {
+    var opciones = {
+      method: 'POST',
+      headers: { 'apikey': C.supabase.anonKey, 'Authorization': 'Bearer ' + sesion.token }
+    };
+    if (cuerpo !== undefined) {
+      opciones.headers['Content-Type'] = 'application/json';
+      opciones.body = JSON.stringify(cuerpo);
+    }
+    return fetch(C.supabase.url + '/rest/v1/rpc/' + nombre, opciones).then(function (r) {
+      if (r.status === 401) { aEntrar(); return { ok: false, status: 401, data: null }; }
+      return r.json()['catch'](function () { return null; }).then(function (d) { return { ok: r.ok, status: r.status, data: d }; });
+    })['catch'](function () { return { ok: false, status: 0, data: null }; });
+  }
 
-    if (dato.token) {
-      var liga = location.origin + location.pathname.replace(/panel\/?$/, '') + 'registro-paciente/?t=' + encodeURIComponent(dato.token);
-      document.getElementById('liga').textContent = liga;
-      document.getElementById('abrir').setAttribute('href', '../registro-paciente/?t=' + encodeURIComponent(dato.token));
-      document.getElementById('copiar').addEventListener('click', function () {
-        var b = this;
-        navigator.clipboard.writeText(liga).then(function () {
-          b.textContent = 'Copiada';
-          setTimeout(function () { b.textContent = 'Copiar liga'; }, 2000);
-        })['catch'](function () { b.textContent = 'No se pudo copiar'; });
+  function esSinPermiso(res) {
+    var d = res.data || {};
+    return res.status === 403 || d.code === '42501' || /sin_permiso/.test(String(d.message || ''));
+  }
+
+  var actual = null;   // id del consultorio elegido
+  var liga = '';
+
+  function pintarQr(texto) {
+    var caja = $('qr');
+    caja.textContent = '';
+    if (!texto || typeof qrcode !== 'function') { return; }
+    var qr = qrcode(0, 'M');
+    qr.addData(texto);
+    qr.make();
+    var celda = 6, margen = 4, n = qr.getModuleCount();
+    var lado = (n + margen * 2) * celda;
+    var lienzo = document.createElement('canvas');
+    lienzo.width = lado; lienzo.height = lado;
+    lienzo.style.width = '200px'; lienzo.style.height = '200px';
+    lienzo.setAttribute('role', 'img');
+    lienzo.setAttribute('aria-label', 'Código QR del formulario de registro');
+    var ctx = lienzo.getContext('2d');
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, lado, lado);
+    ctx.fillStyle = '#1C1917';
+    for (var r = 0; r < n; r++) {
+      for (var c = 0; c < n; c++) {
+        if (qr.isDark(r, c)) { ctx.fillRect((c + margen) * celda, (r + margen) * celda, celda, celda); }
+      }
+    }
+    caja.appendChild(lienzo);
+    $('descargar').disabled = false;
+  }
+
+  function mostrarToken(token) {
+    liga = LIGA_BASE + encodeURIComponent(token);
+    $('liga').textContent = liga;
+    $('abrir').setAttribute('href', liga);
+    pintarQr(liga);
+    $('rotar').disabled = false;
+  }
+
+  function cargarToken(rotar) {
+    $('rotar').disabled = true;
+    return rpc(RPC_TOKEN, { p_business_id: actual, p_rotar: rotar }).then(function (res) {
+      if (res.status === 401) { return; }
+      if (res.ok && typeof res.data === 'string' && res.data) { return mostrarToken(res.data); }
+      error(esSinPermiso(res) ? MSJ_SIN_PERMISO : MSJ_GENERAL);
+      $('rotar').disabled = !liga;
+    });
+  }
+
+  function cargarConteo() {
+    $('num-pendientes').textContent = '—';
+    return rpc(RPC_CONTEO, { p_business_id: actual }).then(function (res) {
+      if (res.status === 401) { return; }
+      // Cualquier error (incluido sin_permiso) → "-" sin bloquear el resto.
+      $('num-pendientes').textContent = res.ok && typeof res.data === 'number' ? String(res.data) : '-';
+    });
+  }
+
+  function elegir(id) {
+    actual = id;
+    liga = '';
+    limpiarError();
+    $('liga').textContent = '—';
+    $('qr').textContent = '';
+    $('descargar').disabled = true;
+    cargarConteo();
+    cargarToken(false);
+  }
+
+  $('copiar').addEventListener('click', function () {
+    var b = this;
+    if (!liga) { return; }
+    navigator.clipboard.writeText(liga).then(function () {
+      b.textContent = 'Copiada';
+      setTimeout(function () { b.textContent = 'Copiar liga'; }, 2000);
+    })['catch'](function () { b.textContent = 'No se pudo copiar'; });
+  });
+
+  $('descargar').addEventListener('click', function () {
+    var lienzo = $('qr').querySelector('canvas');
+    if (!lienzo) { return; }
+    var a = document.createElement('a');
+    a.href = lienzo.toDataURL('image/png');
+    a.download = 'qr-registro-pacientes.png';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+  });
+
+  $('rotar').addEventListener('click', function () { $('confirmar-rotar').classList.remove('oculto'); });
+  $('rotar-no').addEventListener('click', function () { $('confirmar-rotar').classList.add('oculto'); });
+  $('rotar-si').addEventListener('click', function () {
+    $('confirmar-rotar').classList.add('oculto');
+    limpiarError();
+    cargarToken(true);
+  });
+
+  $('consultorio').addEventListener('change', function () { elegir(this.value); });
+
+  rpc(RPC_CONSULTORIOS).then(function (res) {
+    if (res.status === 401) { return; }
+    if (!res.ok || !Array.isArray(res.data)) { return error(esSinPermiso(res) ? MSJ_SIN_PERMISO : MSJ_GENERAL); }
+    var lista = res.data.filter(function (x) { return x && typeof x.id === 'string'; });
+    if (lista.length === 0) { return sinConsultorio(); }
+    if (lista.length > 1) {
+      var sel = $('consultorio');
+      lista.forEach(function (x) {
+        var op = document.createElement('option');
+        op.value = x.id;
+        op.textContent = x.nombre || 'Consultorio';
+        sel.appendChild(op);
       });
+      $('selector').classList.remove('oculto');
     }
-    if (typeof dato.pendientes === 'number') {
-      document.getElementById('num-pendientes').textContent = dato.pendientes;
-    }
-  })['catch'](sinSesion);
+    elegir(lista[0].id);
+  });
 })();
 </script>
 </body>
