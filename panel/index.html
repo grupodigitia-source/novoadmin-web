@@ -104,10 +104,26 @@
   function sinSesion() { document.getElementById('aviso-sesion').classList.remove('oculto'); }
   function sinConsultorio() { document.getElementById('aviso-cuenta').classList.remove('oculto'); }
 
+  /* ─────────────── PANEL APAGADO ───────────────
+     Este panel sigue sin hacer ninguna llamada. La función real de
+     la base es token_registro_qr(p_business_id uuid, p_rotar boolean
+     default false) y devuelve SOLO el token (text), no un objeto.
+     Faltan dos piezas, y las dos son decisión de Patricio:
+       1. De dónde saca el sitio el business_id del dueño. La función
+          lo exige y marca_registro_qr no lo devuelve nunca (a
+          propósito: el QR no debe cargar el id del negocio).
+       2. De dónde sale el número de prerregistros pendientes. Esa
+          cuenta se lee de prerregistros_paciente (RLS es_equipo_agenda),
+          no de token_registro_qr.
+     Mientras eso no se defina, PANEL_ACTIVO se queda en false.
+     ────────────────────────────────────────────── */
+  var PANEL_ACTIVO = false;
+
   if (!sesion || !sesion.token || (sesion.expira && Date.now() > sesion.expira)) { return sinSesion(); }
   if (!C.supabase || !C.supabase.url || !C.supabase.anonKey) { return sinSesion(); }
+  if (!PANEL_ACTIVO || !C.rpc || !C.rpc.tokenDelDueno) { return sinConsultorio(); }
 
-  fetch(C.supabase.url + '/rest/v1/rpc/' + C.rpc.qrDelDueno, {
+  fetch(C.supabase.url + '/rest/v1/rpc/' + C.rpc.tokenDelDueno, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
